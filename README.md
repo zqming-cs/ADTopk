@@ -29,27 +29,26 @@ on the framework, we implement ADTopk in PyTorch, which consists of an interleav
 efficient threshold sparsification module, a communication and aggregation module, and a residual gradient error feedback module.
 
 ### Interleaving compression module
-We implement two compression APIs: **AllDimensionTopk** and **TradTopk**. 
+We implement two compression APIs: `AllDimensionTopk` and `TradTopk`. 
 
-The **AllDimensionTopk** takes as input the original gradient matrix, and it leverages torch.topk function as the basic compressor to select the absolute largest k elements from all input dimension. The number of elements selected on each dimension is k divided by the number of input dimensions, which is at least one. 
-
-The **TradTopk** first flattens the original gradient into a single tensor, and then it leverages torch.topk to select the absolute largest k elements (including values and indices) in the gradient vector.
+- The `AllDimensionTopk` takes as input the original gradient matrix, and it leverages torch.topk function as the basic compressor to select the absolute largest k elements from all input dimension. The number of elements selected on each dimension is k divided by the number of input dimensions, which is at least one. 
+- The `TradTopk` first flattens the original gradient into a single tensor, and then it leverages torch.topk to select the absolute largest k elements (including values and indices) in the gradient vector.
 
 ### Efficient threshold sparsification module
-In this module, we implement a **ThresholdTopk** function to adjust the frequency of interleaving compression and replace the **TradTopk**, which consists of a **monitor** and an **updater**. 
+In this module, we implement a `ThresholdTopk` function to adjust the frequency of interleaving compression and replace the `TradTopk`, which consists of a `monitor` and an `updater`. 
 
-The **monitor** is designed to monitor changes in the threshold and iteration.
-
-The **updater** periodically updates the threshold.
+- The `monitor` is designed to monitor changes in the threshold and iteration.
+- The `updater` periodically updates the threshold.
 
 ### Communication and aggregation module
-To enable communication and aggregation of the compressed gradient, we rewrite the core component **DistributedOptimizer**
-of Horovod. 
-
-In **DistributedOptimizer**, we provide three collective communication primitives APIs for **Allreduce**, **Allgather**, and **AllgatherFast**.
+To enable communication and aggregation of the compressed gradient, we rewrite the core component `DistributedOptimizer`
+of Horovod. In `DistributedOptimizer`, we provide three collective communication primitives APIs for `Allreduce`, `Allgather`, and `AllgatherFast`.
+- we leverage the `allreduce_async_` function to design `Allreduce` collective communication primitive to execute the communication and aggregation in the dense non-compression baseline. Allreduce is the most efficient operation, but it is not readily suitable for several scenarios.
+- We use `allgather_async_` function to design `Allgather` primitive to execute the communication and aggregation in sparse ADTopk and other state-off-the-art sparsification compression methods. It does not perform any aggregation, only supports input gradients of different forms, and is well suited for sparsification when different nodes select gradient elements at non-overlapping indices.
+- We also implement another alternative primitive called `AllgatherFast`, which speeds up communication by eliminating the gradient split step compared to `Allgather`.
 
 ### Residual gradient error feedback module
-In this module, we implement an error feedback API, including includes a **memory.compensate** function that accumulates residual into a locally generated gradient and a **memory.update** function that calculates the difference between the compensated gradient and the compressed gradient to update the residual and store it in memory
+In this module, we implement an error feedback API, including includes a `memory.compensate` function that accumulates residual into a locally generated gradient and a `memory.update` function that calculates the difference between the compensated gradient and the compressed gradient to update the residual and store it in memory
 
 
 ## Installation
