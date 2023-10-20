@@ -48,7 +48,7 @@ of Horovod. In `DistributedOptimizer`, we provide three collective communication
 - We also implement another alternative primitive called `AllgatherFast`, which speeds up communication by eliminating the gradient split step compared to `Allgather`.
 
 ### Residual gradient error feedback module
-In this module, we implement an error feedback API, including includes a `memory.compensate` function that accumulates residual into a locally generated gradient and a `memory.update` function that calculates the difference between the compensated gradient and the compressed gradient to update the residual and store it in memory
+In this module, we implement an error feedback API, including includes a `memory.compensate` function that accumulates residual into a locally generated gradient and a `memory.update` function that calculates the difference between the compensated gradient and the compressed gradient to update the residual and store it in memory.
 
 
 ## Installation
