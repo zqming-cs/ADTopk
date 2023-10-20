@@ -17,33 +17,6 @@
 # BERT_BASE_DIR='/home/mzq/mingzq/workspaces/project/grace/examples/torch/nlp/bert/pre-model/bert-base-uncased/uncased_L-12_H-768_A-12/'
 
 
-# scp /home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/run_squad_actopk.py user@n16:/home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/
-# scp /home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/run_squad_actopk.py user@n17:/home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/
-# scp /home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/run_squad_actopk.py user@n18:/home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/
-# scp /home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/run_squad_actopk.py user@n19:/home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/
-# scp /home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/run_squad_actopk.py user@n20:/home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/
-# scp /home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/run_squad_actopk.py user@n21:/home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/
-# scp /home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/run_squad_actopk.py user@n22:/home/user/eurosys23/workspace/ACTopk/examples/nlp/bert/
-
-
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/allgather.py user@n16:/home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/allgather.py user@n17:/home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/allgather.py user@n18:/home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/allgather.py user@n19:/home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/allgather.py user@n20:/home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/allgather.py user@n21:/home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/allgather.py user@n22:/home/user/eurosys23/workspace/ACTopk/actopk_lib/communicator/
-
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/actopk.py user@n16:/home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/actopk.py user@n17:/home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/actopk.py user@n18:/home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/actopk.py user@n19:/home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/actopk.py user@n20:/home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/actopk.py user@n21:/home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/
-# scp /home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/actopk.py user@n22:/home/user/eurosys23/workspace/ACTopk/actopk_lib/compressor/ 
-
-
-
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
 # export DIR_Model="/home/mzq/mingzq/workspaces/project/grace/examples/torch/nlp/bert/pre-model/bert-large-uncased/uncased_L-24_H-1024_A-16"
@@ -64,8 +37,8 @@ seed=${8:-"1"}
 squad_dir=${9:-"$DIR_DataSet/squad"}
 vocab_file=${10:-"$DIR_Model/vocab.txt"}
 # 输出模型和预测结果
-# OUT_DIR=${11:-"./squad_base/actopk/8"}
-OUT_DIR=${11:-"../squad_base/compression_rate/actopk_docker"}
+# OUT_DIR=${11:-"./squad_base/adtopk/8"}
+OUT_DIR=${11:-"../squad_base/compression_rate/adtopk_docker"}
 
 
 # train+eval
@@ -98,7 +71,7 @@ fi
 
 # CMD="python  $mpi_command ../run_squad_hvd.py "
 # CMD="HOROVOD_GPU_OPERATIONS=NCCL HOROVOD_CACHE_CAPACITY=0 "
-CMD=" horovodrun -np 4 -H n17:1,n18:1,n21:1,n20:1  -p 12345 python ../../run_squad_actopk_docker.py "
+CMD=" horovodrun -np 4 -H n17:1,n18:1,n21:1,n20:1  -p 12345 python ../../run_squad_adtopk_docker.py "
 CMD+="--init_checkpoint=$init_checkpoint "
 if [ "$mode" = "train" ] ; then
   CMD+="--do_train "

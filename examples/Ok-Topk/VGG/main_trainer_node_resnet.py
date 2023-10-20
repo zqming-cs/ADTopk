@@ -41,7 +41,7 @@ x_test_epoch_time = []
 x_train_epoch_time = []
 x_epoch = []
 
-# 绘制训练曲线图
+
 def draw_curve(epoch):
     fig = plt.figure(figsize=(18, 14))
 
@@ -62,11 +62,11 @@ def draw_curve(epoch):
     ax1.legend()
     ax2.legend()
     ax3.legend()
-    save_dir_figure='/home/user/eurosys23/workspace/ACTopk/examples/plot_eurosys/oktopk/vgg/figure'
-    save_dir_data='/home/user/eurosys23/workspace/ACTopk/examples/plot_eurosys/oktopk/vgg/data'
+    save_dir_figure='/home/user/eurosys23/workspace/ADTopk/examples/plot_eurosys/oktopk/resnet/figure'
+    save_dir_data='/home/user/eurosys23/workspace/ADTopk/examples/plot_eurosys/oktopk/resnet/data'
 
-    dataset_model = '/cifar100_vgg16'
-    date = '0914'
+    dataset_model = '/cifar100_resnet50'
+    date = '0919'
     comp_type = '/oktopk'
     comp = '/oktopk'
     figpath = save_dir_figure + dataset_model
@@ -98,15 +98,11 @@ def robust_ssgd(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update,
     
     print('GPU is ',flag)
     
-    # 多机多卡
     nwpernode=1
     # torch.cuda.set_device(dopt.rank()%nwpernode)
     
     torch.cuda.set_device(0)
-    
-    
-    
-    
+
     
     rank = dopt.rank()
     print('dopt.rank()',dopt.rank())
@@ -128,7 +124,6 @@ def robust_ssgd(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update,
 
     compressor_name = compressor_name if compression else 'none'
     
-    # 加载压缩器
     compressor = compressors[compressor_name]
     is_sparse = compression
 
@@ -150,10 +145,7 @@ def robust_ssgd(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update,
     logger.info('Broadcast parameters finished....')
 
     norm_clip = None
-     
-    # 初始化ACTopk 
-    # compressor=compressor()
-    # compressor.initialize(trainer.net.named_parameters())
+    
 
     optimizer = dopt.DistributedOptimizer(trainer.optimizer, trainer.net.named_parameters(), compression=compressor, is_sparse=is_sparse, err_handler=_error_handler, layerwise_times=None, sigma_scale=sigma_scale, density=density, norm_clip=norm_clip, writer=writer)
 

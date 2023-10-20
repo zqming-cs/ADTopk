@@ -29,7 +29,7 @@ class AllgatherEval():
         return tensor_decompressed
 
 
-    def actopk(self, tensor, compress_ratio=0.01):
+    def adtopk(self, tensor, compress_ratio=0.01):
         
         numel = tensor.numel()
         shape =tensor.shape
@@ -56,7 +56,7 @@ class AllgatherEval():
 
         allgathered_1 = self.compressor.aggregate(list_tensor_ef) * self.lr / self.world_size
         allgathered_1 = allgathered_1.flatten()
-        allgathered_1 = self.actopk(allgathered_1, 0.01)
+        allgathered_1 = self.adtopk(allgathered_1, 0.01)
 
         allgathered_2 = self.compressor.aggregate(list_tensor_decompressed) * self.lr / self.world_size
         allgathered_2 = allgathered_2.flatten()

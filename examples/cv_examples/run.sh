@@ -5,7 +5,7 @@ func() {
     echo "run.sh [-d dataset] [-m model] [-c compressor] [-e epochs]"
     echo "dataset:      cifar100, imagenet"
     echo "model:        resnet50, resnet101, vgg16, vgg19"
-    echo "compressor:   none, actopk, allchanneltopk, globaltopk, dgc, gaussiank, redsync, sidco"
+    echo "compressor:   none, adtopk, allchanneltopk, globaltopk, dgc, gaussiank, redsync, sidco"
     exit -1
 }
 
@@ -23,12 +23,12 @@ done
 
 dataset="${dataset:-cifar100}"
 model="${model:-vgg16}"
-compressor="${compressor:-actopk}"
+compressor="${compressor:-adtopk}"
 epochs="${epochs:-80}"
 
 
 # example
-# ./run.sh -d cifar100 -m vgg16 -c actopk
+# ./run.sh -d cifar100 -m vgg16 -c adtopk
 
 # single node with 8 GPUs
 HOROVOD_GPU_OPERATIONS=NCCL HOROVOD_CACHE_CAPACITY=0 horovodrun -np 8 -H localhost:8 python $(pwd)/cv_run.py --dataset ${dataset} --model-net ${model} --compressor ${compressor} --epochs ${epochs}

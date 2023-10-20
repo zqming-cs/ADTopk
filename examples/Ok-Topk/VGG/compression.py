@@ -23,7 +23,7 @@ class NoneCompressor():
         return z 
 
 
-class ACTopkCompressor():
+class ADTopkCompressor():
     
     def __init__(self):
         self.epoch=0
@@ -43,7 +43,7 @@ class ACTopkCompressor():
         self.tensor={}
         
         
-    name = 'actopk'
+    name = 'adtopk'
        
     def initialize(self, named_parameters):
         # if hvd.rank() == 0:
@@ -94,8 +94,8 @@ class ACTopkCompressor():
     def compress(tensor, name=None, ratio=0.01, counter=-1, rank=-1):
         
         with torch.no_grad():
-            if name not in ACTopkCompressor.residuals:
-                ACTopkCompressor.residuals[name] = torch.zeros_like(tensor.data)
+            if name not in ADTopkCompressor.residuals:
+                ADTopkCompressor.residuals[name] = torch.zeros_like(tensor.data)
 
             compress_ratio_global=1.0
             tensor_flatten = tensor.flatten()
@@ -108,16 +108,16 @@ class ACTopkCompressor():
                 
                 k = max(int(numel * ratio), 1)
                 
-                tensor.data.add_(ACTopkCompressor.residuals[name].data)
+                tensor.data.add_(ADTopkCompressor.residuals[name].data)
                 _, indices_flatten_global = torch.topk(tensor_flatten.abs(), k, sorted=False,)
                 values_flatten_global = torch.gather(tensor_flatten, 0, indices_flatten_global)
 
-                ACTopkCompressor.residuals[name].data = tensor.data + 0.0
-                ACTopkCompressor.residuals[name].data[indices_flatten_global] = 0.0
+                ADTopkCompressor.residuals[name].data = tensor.data + 0.0
+                ADTopkCompressor.residuals[name].data[indices_flatten_global] = 0.0
 
                 indices_flatten_global = indices_flatten_global.type(torch.IntTensor)
-                # ACTopkCompressor.values[name] = values_flatten_global
-                # ACTopkCompressor.indexes[name] = indices_flatten_global
+                # ADTopkCompressor.values[name] = values_flatten_global
+                # ADTopkCompressor.indexes[name] = indices_flatten_global
                 
                 return indices_flatten_global, values_flatten_global
             
@@ -131,21 +131,21 @@ class ACTopkCompressor():
     
     @staticmethod
     def get_residuals(name, like_tensor):
-        if name not in ACTopkCompressor.residuals:
-            ACTopkCompressor.residuals[name] = torch.zeros_like(like_tensor.data)
-        return ACTopkCompressor.residuals[name]
+        if name not in ADTopkCompressor.residuals:
+            ADTopkCompressor.residuals[name] = torch.zeros_like(like_tensor.data)
+        return ADTopkCompressor.residuals[name]
 
     @staticmethod
     def add_residuals(included_indexes, name):
         with torch.no_grad():
-            residuals = ACTopkCompressor.residuals[name]
+            residuals = ADTopkCompressor.residuals[name]
             if type(included_indexes) is np.ndarray:
                 indexes_t = torch.from_numpy(included_indexes).cuda(residuals.device).long()
             else:
                 indexes_t = included_indexes
-            values = ACTopkCompressor.values[name]
+            values = ADTopkCompressor.values[name]
             values.data[indexes_t] = 0.0
-            residuals.data[ACTopkCompressor.indexes[name]] += values.data
+            residuals.data[ADTopkCompressor.indexes[name]] += values.data
 
     
     
@@ -654,5 +654,5 @@ compressors = {
         'oktopk': OKTopKCompressor,
         'none': NoneCompressor,
         
-        'actopk': ACTopkCompressor
+        'adtopk': ADTopkCompressor
         }

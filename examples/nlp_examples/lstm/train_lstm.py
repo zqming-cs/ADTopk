@@ -64,7 +64,7 @@ parser.add_argument('--cutoffs', nargs="*", type=int, default=[10000, 50000, 100
                     help='cutoff values for adaptive softmax. list of integers.'
                          'optimal values are based on word frequencey and vocabulary size of the dataset.')
 
-parser.add_argument('--compressor', default='actopk',type=str, help='compressor type')
+parser.add_argument('--compressor', default='adtopk',type=str, help='compressor type')
 parser.add_argument('--dataset', default='wikitext-2',type=str, help='dataset type')
 
 
@@ -253,8 +253,6 @@ else:
 
 import ADTopklib
 
-# Horovod: wrap optimizer with DistributedOptimizer.
-# 得到一个分布式的SGD优化器
 optimizer = ADTopklib.DistributedOptimizer(
     optimizer, comm_params=comm_params, named_parameters=model.named_parameters())
 

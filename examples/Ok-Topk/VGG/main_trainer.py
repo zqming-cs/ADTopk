@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-import sys
-pythonpath = sys.executable
-print(pythonpath)
 import time
 import torch
 import numpy as np
@@ -62,13 +59,13 @@ def draw_curve(epoch):
     ax1.legend()
     ax2.legend()
     ax3.legend()
-    save_dir_figure='/home/user/eurosys23/workspace/ACTopk/examples/plot_eurosys/oktopk/vgg/figure'
-    save_dir_data='/home/user/eurosys23/workspace/ACTopk/examples/plot_eurosys/oktopk/vgg/data'
+    save_dir_figure='/home/mzq/mingzq/workspaces/project/grace/examples/Ok-Topk/VGG/result/figure'
+    save_dir_data='/home/mzq/mingzq/workspaces/project/grace/examples/Ok-Topk/VGG/result/data'
 
     dataset_model = '/cifar100_vgg16'
-    date = '0919'
-    comp_type = '/oktopk'
-    comp = '/oktopk'
+    date = '0914'
+    comp_type = '/baseline'
+    comp = '/baseline'
     figpath = save_dir_figure + dataset_model
     datapath = save_dir_data + dataset_model + comp_type
     if not os.path.exists(figpath):
@@ -92,21 +89,8 @@ def robust_ssgd(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update,
     global relative_path
     
     ngpus=1
-    # torch.cuda.set_device(dopt.rank())
+    torch.cuda.set_device(dopt.rank())
     # device = torch.device('cpu')
-    flag = torch.cuda.is_available() 
-    
-    print('GPU is ',flag)
-    
-    # 多机多卡
-    nwpernode=1
-    # torch.cuda.set_device(dopt.rank()%nwpernode)
-    
-    torch.cuda.set_device(0)
-    
-    
-    
-    
     
     rank = dopt.rank()
     print('dopt.rank()',dopt.rank())
@@ -151,7 +135,6 @@ def robust_ssgd(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update,
 
     norm_clip = None
      
-    # 初始化ACTopk 
     # compressor=compressor()
     # compressor.initialize(trainer.net.named_parameters())
 

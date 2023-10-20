@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+import sys
+pythonpath = sys.executable
+print(pythonpath)
 import time
 import torch
 import numpy as np
@@ -38,59 +41,24 @@ x_test_epoch_time = []
 x_train_epoch_time = []
 x_epoch = []
 
-# 绘制训练曲线图
-def draw_curve(epoch):
-    fig = plt.figure(figsize=(18, 14))
-
-    ax0 = fig.add_subplot(221, title="train loss", xlabel = 'epoch', ylabel = 'loss')
-    ax1 = fig.add_subplot(222, title="test loss")
-
-    ax2 = fig.add_subplot(223, title="train top1_accuracy", xlabel = 'epoch', ylabel = 'accuracy')
-    ax3 = fig.add_subplot(224, title="test top1_accuracy")
-
-    x_epoch = range(1, epoch + 1)
-    ax0.plot(x_epoch, y_loss['train'], 'ro-', label='train')
-    ax1.plot(x_epoch, y_loss['test'], 'ro-', label='test')
-
-    ax2.plot(x_epoch, y_acc['train'], 'bo-', label='train')
-    ax3.plot(x_epoch, y_acc['test'],  'bo-', label='test')
-
-    ax0.legend()
-    ax1.legend()
-    ax2.legend()
-    ax3.legend()
-    save_dir_figure='/home/mzq/mingzq/workspaces/project/grace/examples/Ok-Topk/VGG/result/figure'
-    save_dir_data='/home/mzq/mingzq/workspaces/project/grace/examples/Ok-Topk/VGG/result/data'
-
-    dataset_model = '/cifar100_vgg16'
-    date = '0914'
-    comp_type = '/baseline'
-    comp = '/baseline'
-    figpath = save_dir_figure + dataset_model
-    datapath = save_dir_data + dataset_model + comp_type
-    if not os.path.exists(figpath):
-        os.makedirs(figpath)
-    if not os.path.exists(datapath):
-        os.makedirs(datapath)
-
-    fig.savefig(figpath + comp + '_epoch' + str(epoch) + '_' + date + '.jpg')
-
-    np.savetxt(datapath + comp + "_e" + str(epoch) + "_ytest_acc_" + date + ".txt", y_acc['test'])
-
-    np.savetxt(datapath + comp + "_e" + str(epoch) + "_xtrain_time_" + date + ".txt", x_train_epoch_time)
-    np.savetxt(datapath + comp + "_e" + str(epoch) + "_ytrain_acc_" + date + ".txt", y_acc['train'])
-    
-    return
-
-
-
 
 def robust_ssgd(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update, max_epochs, compression=False, compressor_name='topk', nwpernode=1, sigma_scale=2.5, pretrain=None, density=0.01, prefix=None):
     global relative_path
     
     ngpus=1
-    torch.cuda.set_device(dopt.rank())
+    # torch.cuda.set_device(dopt.rank())
     # device = torch.device('cpu')
+    flag = torch.cuda.is_available() 
+    
+    print('GPU is ',flag)
+
+    nwpernode=1
+    # torch.cuda.set_device(dopt.rank()%nwpernode)
+    torch.cuda.set_device(0)
+    
+    
+    
+    
     
     rank = dopt.rank()
     print('dopt.rank()',dopt.rank())
@@ -134,8 +102,7 @@ def robust_ssgd(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update,
     logger.info('Broadcast parameters finished....')
 
     norm_clip = None
-     
-    # 初始化ACTopk 
+    
     # compressor=compressor()
     # compressor.initialize(trainer.net.named_parameters())
 

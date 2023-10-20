@@ -9,7 +9,7 @@ import scipy.stats as stats
 import time
 
 
-class ACTopkThresholdResNetCompressor(Compressor):
+class ADTopkCompressor(Compressor):
 
     def __init__(self, compress_ratio, rank):
         super().__init__()
@@ -44,19 +44,19 @@ class ACTopkThresholdResNetCompressor(Compressor):
 
         if self.train_type=='resnet':
             self.tau=5
-            self.warm_train_iterations=5
+            self.warm_train_iterations=15
         elif self.train_type=='vgg':
-            self.tau=5
-            self.warm_train_iterations=5
+            self.tau=10
+            self.warm_train_iterations=15
         elif self.train_type=='lstm':
-            self.tau=5
-            self.warm_train_iterations=5
+            self.tau=20
+            self.warm_train_iterations=15
         elif self.train_type=='bert':
-            self.tau=5
-            self.warm_train_iterations=5
+            self.tau=20
+            self.warm_train_iterations=15
         else:
             self.tau=5
-            self.warm_train_iterations=5
+            self.warm_train_iterations=15
         
         for name, param in named_parameters:
             
@@ -122,10 +122,8 @@ class ACTopkThresholdResNetCompressor(Compressor):
         
         else:
             mask = tensor_flatten > thres_global
-            indices_flatten_global, = torch.where(mask)            
-            # if indices_flatten_global.numel() > k:
-            # indices_flatten_global = indices_flatten_global[:k]
-            values_flatten_global=tensor_flatten[indices_flatten_global]
+            indices_flatten_global, = torch.where(mask)   
+            # values_flatten_global=tensor_flatten[indices_flatten_global]            
             values_flatten_global = torch.gather(tensor_flatten, 0, indices_flatten_global)
             return values_flatten_global, indices_flatten_global
         
@@ -134,7 +132,6 @@ class ACTopkThresholdResNetCompressor(Compressor):
         tensor_flatten = tensor.flatten()
         numel = tensor.numel()
         shape =tensor.shape
-
         compress_ratio=0.01
 
 
@@ -146,12 +143,12 @@ class ACTopkThresholdResNetCompressor(Compressor):
             return values_flatten_1, indices_flatten_1  
                    
         else:
-            # Traditional Top-k
-                
+            # Traditional Top-k                
             # k= max(1, int(numel * compress_ratio*compress_ratio_global))
             # _, indices_flatten_global = torch.topk(tensor_flatten.abs(), k, sorted=False,)
             # values_flatten_global = torch.gather(tensor_flatten, 0, indices_flatten_global)
             
+            # Threshold Top-k  
             values_flatten_global, indices_flatten_global= self.ThresholdTopk(name,tensor_flatten,tensor, shape,numel,compress_ratio,epoch,iteration)
                    
             return values_flatten_global, indices_flatten_global

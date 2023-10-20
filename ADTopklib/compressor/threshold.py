@@ -22,15 +22,12 @@ class ThresholdCompressor(Compressor):
         self.values_flatten_global_np_arr=[]
         self.values_flatten_channel_np_arr=[]
 
-    def compress(self, tensor, name):
-        
-        
+    def compress(self, tensor, name):    
         shape = tensor.size()
         tensor = tensor.flatten()
         numel = tensor.numel()
         compress_ratio=0.01
         
-        # 阈值计算
         tensor_flatten=tensor.flatten().cuda()
         k= max(1, int(numel * compress_ratio))
         values_global_abs, indices_flatten_global = torch.topk(tensor_flatten.abs(), k, sorted=False,)

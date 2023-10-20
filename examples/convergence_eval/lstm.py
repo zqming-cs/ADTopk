@@ -246,7 +246,7 @@ memory = ResidualMemory()
 communicator = AllgatherEval(compressor=compressor, memory=memory, world_size=hvd.size())
 
 # Horovod: wrap optimizer with DistributedOptimizer.
-# 得到一个分布式的SGD优化器
+
 optimizer = hvd.DistributedOptimizer(
     optimizer, communicator=communicator, named_parameters=model.named_parameters(),op=hvd.Adasum if args.use_adasum else hvd.Average)
 

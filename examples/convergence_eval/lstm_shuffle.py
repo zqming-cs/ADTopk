@@ -229,17 +229,23 @@ best_val_loss = None
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr) 
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor=0.5, patience=5)
 
-from ADTopklib.helper import get_communicator
 
-# Allgather 
-params = {'compressor': 'none', 'memory': 'none', 'communicator': 'allreduce'}
+hvd.broadcast_parameters(model.state_dict(), root_rank=0)
+hvd.broadcast_optimizer_state(optimizer, root_rank=0)
+        
+comm_params = {
+    'comm_mode':'allgather_fast',
+    'compressor':'adtopk',
+    'memory':'residual',
+    'send_size_aresame':True,
+    'model_named_parameters': model.named_parameters()
+    }
 
-communicator = get_communicator(params)
+import ADTopklib
+# Horovod: wrap optimizer with DistributedOptimizer.
 
-optimizer = hvd.DistributedOptimizer(optimizer, communicator=communicator, named_parameters=model.named_parameters(),op=hvd.Average) 
-
-hvd.broadcast_parameters(model.state_dict(), root_rank=0) 
-hvd.broadcast_optimizer_state(optimizer, root_rank=0) 
+optimizer = ADTopklib.DistributedOptimizer(
+    optimizer, comm_params=comm_params, named_parameters=model.named_parameters())
 
 try:     
     for epoch in range(1, args.epochs+1):         

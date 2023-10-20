@@ -965,7 +965,7 @@ class DLTrainer:
         return num_of_iters
 
 
-    def train_actopk(self, num_of_iters=1, curr_iter=0, data=None, hidden=None):
+    def train_adtopk(self, num_of_iters=1, curr_iter=0, data=None, hidden=None):
         self.loss = 0.0
         s = time.time()
 

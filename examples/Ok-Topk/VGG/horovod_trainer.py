@@ -37,51 +37,6 @@ x_train_epoch_time = []
 x_epoch = []
 
 
-# 绘制训练曲线图
-def draw_curve(epoch):
-    fig = plt.figure(figsize=(18, 14))
-
-    ax0 = fig.add_subplot(221, title="train loss", xlabel = 'epoch', ylabel = 'loss')
-    ax1 = fig.add_subplot(222, title="test loss")
-
-    ax2 = fig.add_subplot(223, title="train top1_accuracy", xlabel = 'epoch', ylabel = 'accuracy')
-    ax3 = fig.add_subplot(224, title="test top1_accuracy")
-
-    x_epoch = range(1, epoch + 1)
-    ax0.plot(x_epoch, y_loss['train'], 'ro-', label='train')
-    ax1.plot(x_epoch, y_loss['test'], 'ro-', label='test')
-
-    ax2.plot(x_epoch, y_acc['train'], 'bo-', label='train')
-    ax3.plot(x_epoch, y_acc['test'],  'bo-', label='test')
-
-    ax0.legend()
-    ax1.legend()
-    ax2.legend()
-    ax3.legend()
-    save_dir_figure='/home/mzq/mingzq/workspaces/project/grace/examples/Ok-Topk/VGG/result/figure'
-    save_dir_data='/home/mzq/mingzq/workspaces/project/grace/examples/Ok-Topk/VGG/result/data'
-
-    dataset_model = '/cifar100_vgg16'
-    date = '0914'
-    comp_type = '/actopk_0914'
-    comp = '/actopk_0914'
-    figpath = save_dir_figure + dataset_model
-    datapath = save_dir_data + dataset_model + comp_type
-    if not os.path.exists(figpath):
-        os.makedirs(figpath)
-    if not os.path.exists(datapath):
-        os.makedirs(datapath)
-
-    fig.savefig(figpath + comp + '_epoch' + str(epoch) + '_' + date + '.jpg')
-
-    np.savetxt(datapath + comp + "_e" + str(epoch) + "_ytest_acc_" + date + ".txt", y_acc['test'])
-
-    np.savetxt(datapath + comp + "_e" + str(epoch) + "_xtrain_time_" + date + ".txt", x_train_epoch_time)
-    np.savetxt(datapath + comp + "_e" + str(epoch) + "_ytrain_acc_" + date + ".txt", y_acc['train'])
-    
-    return
-
-
 def ssgd_with_horovod(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_update, max_epochs, nwpernode, pretrain, num_steps = 1):
     rank = hvd.rank()
     # torch.cuda.set_device(rank%nwpernode)
@@ -99,14 +54,8 @@ def ssgd_with_horovod(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_u
     # model_state=hvd.broadcast_parameters(trainer.net.state_dict(), root_rank=0)
     # trainer.net.load_state_dict(model_state)
     
-    params = {'compressor': 'actopk_vgg', 'memory': 'residual', 'communicator': 'allgather','model_named_parameters':trainer.net.named_parameters()}
+    params = {'compressor': 'adtopk', 'memory': 'residual', 'communicator': 'allgather','model_named_parameters':trainer.net.named_parameters()}
    
-    # params = {'compressor': 'topkrs18efactopk', 'memory': 'residual', 'communicator': 'allgather','model_named_parameters':trainer.net.named_parameters()}
-    
-    # params = {'compressor': 'topkrs18throughput', 'memory': 'residual', 'communicator': 'allgather','cur_epoch': current_epoch,'model_named_parameters':model.named_parameters()}
-    # params = {'compressor': 'topk', 'memory': 'residual', 'communicator': 'allgather','cur_epoch': current_epoch,'model_named_parameters':model.named_parameters()}
-    # params = {'compressor': 'none', 'memory': 'none', 'communicator': 'allgather','cur_epoch': current_epoch,'model_named_parameters':model.named_parameters()}
-
     # Allreduce
     # params = {'compressor': 'topk', 'memory': 'residual', 'communicator': 'allreduce'}
 
@@ -150,9 +99,9 @@ def ssgd_with_horovod(dnn, dataset, data_dir, nworkers, lr, batch_size, nsteps_u
                 else:
                     optimizer.local = False
                 if dnn == 'lstm':
-                    _, hidden = trainer.train_actopk(1, hidden=hidden)
+                    _, hidden = trainer.train_adtopk(1, hidden=hidden)
                 else:
-                    trainer.train_actopk(1,curr_iter=i)
+                    trainer.train_adtopk(1,curr_iter=i)
             if dnn == 'lstm':
                 optimizer.synchronize()
                 torch.nn.utils.clip_grad_norm_(trainer.net.parameters(), 0.25)

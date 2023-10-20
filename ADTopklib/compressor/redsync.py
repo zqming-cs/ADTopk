@@ -15,8 +15,6 @@ class RedSyncCompressor(Compressor):
         self.rank = rank
         self.epoch=0
 
-
-    # tensor反稀疏化
     def desparsify(self, tensors, numel, shape):
         values, indices = tensors
         # if True:
@@ -29,8 +27,6 @@ class RedSyncCompressor(Compressor):
 
             return tensor_decompressed
 
-
-    # 抽象方法重载compress
     def compress(self, tensor, name):
         numel = tensor.numel()
         shape = tensor.size()
@@ -94,10 +90,10 @@ class RedSyncCompressor(Compressor):
         values, indices = tensors
         if values.numel()==numel:
             return values
-        # 返回一个形状为为size,类型为torch.dtype,里面的每一个值都是0的tensor
+        
         tensor_decompressed = torch.zeros(
             numel, dtype=values.dtype, layout=values.layout, device=values.device).cuda()
-        # 填充稀疏值
+
         # if hvd.rank() == 0:
         #     print('values: ', values, 'indices: ', indices)
         # [a,b,    c,d]  [0,1,    0,2]

@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description='PyTorch Cifar100 Example',
 # parser.add_argument('--net', default='resnet50',type=str, required=True, help='net type')
 parser.add_argument('--model-net', default='resnet50',type=str, help='net type')
 parser.add_argument('--dataset', default='cifar100',type=str, help='dataset type')
-parser.add_argument('--compressor', default='actopk',type=str, help='compressor type')
+parser.add_argument('--compressor', default='adtopk',type=str, help='compressor type')
 
 parser.add_argument('--train-dir', default=os.path.expanduser('~/cifar100/train'),
                     help='path to training data')
@@ -374,11 +374,11 @@ if __name__ == '__main__':
             'memory':'none',
             'send_size_aresame':True
         }
-    elif args.compressor == 'actopk':
+    elif args.compressor == 'adtopk':
         if args.model_net[:6] == 'resnet':
             comm_params = {
                 'comm_mode':'allgather_fast',
-                'compressor':'actopk_resnet50',
+                'compressor':'adtopk',
                 'memory':'residual',
                 'send_size_aresame':True,
                 'model_named_parameters': model.named_parameters()
@@ -387,7 +387,7 @@ if __name__ == '__main__':
         else:
             comm_params = {
                 'comm_mode':'allgather_fast',
-                'compressor':'actopk_vgg16',
+                'compressor':'adtopk',
                 'memory':'residual',
                 'send_size_aresame':True,
                 'model_named_parameters': model.named_parameters()
@@ -403,13 +403,9 @@ if __name__ == '__main__':
         }
 
 
-    # Horovod: wrap optimizer with DistributedOptimizer.
-    # 得到一个分布式的SGD优化器
-
     import ADTopklib
 
     # Horovod: wrap optimizer with DistributedOptimizer.
-    # 得到一个分布式的SGD优化器
     optimizer = ADTopklib.DistributedOptimizer(
         optimizer, comm_params=comm_params, named_parameters=model.named_parameters())
 
@@ -423,8 +419,7 @@ if __name__ == '__main__':
     for epoch in range(resume_from_epoch, args.epochs):
         train(epoch)
         validate(epoch)
-        
-        # 保存最后一个训练模型
+    
         # if epoch==args.epochs-1:
         #     save_checkpoint(epoch)
 

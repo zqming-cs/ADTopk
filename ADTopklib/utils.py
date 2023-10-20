@@ -9,7 +9,7 @@ def find_duplicates(lst):
         seen.add(el)
     return dups
 
-# return communication mode: allreduce or allgather
+# return communication mode: allreduce, allgather, allgather_fast
 def get_comm(params):
     comm_name = params.get('comm_mode', 'allreduce')
     return comm_name
@@ -23,12 +23,12 @@ def get_compressor(params):
 
     elif compress_name == 'dgc':
         from ADTopklib.compressor.dgc import DgcCompressor
-        compress_ratio = params.get('compress_ratio', 0.3)
+        compress_ratio = params.get('compress_ratio', 0.01)
         compressor = DgcCompressor(compress_ratio)
     
     elif compress_name == 'topk':
         from ADTopklib.compressor.topk import TopKCompressor
-        compress_ratio = params.get('compress_ratio', 0.001)
+        compress_ratio = params.get('compress_ratio', 0.01)
         compressor = TopKCompressor(compress_ratio,rank=hvd.rank())
     
     elif compress_name == 'gaussiank':
@@ -60,109 +60,44 @@ def get_compressor(params):
         from ADTopklib.compressor.sidco import GammaGParetoCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
         compressor = GammaGParetoCompressor(compress_ratio)
-
-    elif compress_name == 'topkrs18ef':
-        from ADTopklib.compressor.topkrs18ef import TopKRs18EFCompressor
+    
+    elif compress_name == 'adtopk':
+        from ADTopklib.compressor.adtopk import ADTopkCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
         model_named_parameters = params.get('model_named_parameters')
-        compressor = TopKRs18EFCompressor(compress_ratio,rank=hvd.rank())
+        compressor = ADTopkCompressor(compress_ratio,rank=hvd.rank())
         compressor.initialize(model_named_parameters)
-    
-    elif compress_name == 'topkthroughput':
-        from ADTopklib.compressor.topkthroughput import TopkThroughputCompressor
+        
+    elif compress_name == 'adtopk-i':
+        from ADTopklib.compressor.adtopk_i import ADTopkInterleavingCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
         model_named_parameters = params.get('model_named_parameters')
-        compressor = TopkThroughputCompressor(compress_ratio,rank=hvd.rank())
-    
-    elif compress_name == 'actopk':
-        from ADTopklib.compressor.actopk import ACTopkInterleavingCompressor
-        compress_ratio = params.get('compress_ratio', 0.01)
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkInterleavingCompressor(compress_ratio,rank=hvd.rank())
+        compressor = ADTopkInterleavingCompressor(compress_ratio,rank=hvd.rank())
         compressor.initialize(model_named_parameters)
-    
-    elif compress_name == 'actopk_vgg16':
-        from ADTopklib.compressor.actopk_vgg16 import ACTopkInterleavingVggCompressor
-        compress_ratio = params.get('compress_ratio', 0.01)
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkInterleavingVggCompressor(compress_ratio,rank=hvd.rank())
-        compressor.initialize(model_named_parameters)   
-
-    elif compress_name == 'actopk_resnet50':
-        from ADTopklib.compressor.actopk_resnet50 import ACTopkInterleavingResnetCompressor
-        compress_ratio = params.get('compress_ratio', 0.01)
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkInterleavingResnetCompressor(compress_ratio,rank=hvd.rank())
-        compressor.initialize(model_named_parameters)   
   
-    elif compress_name == 'globaltopk':
-        from ADTopklib.compressor.globaltopk import GlobalTopkCompressor
+    elif compress_name == 'tradtopk':
+        from ADTopklib.compressor.tradtopk import TraditionalTopkCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
         model_named_parameters = params.get('model_named_parameters')
-        compressor = GlobalTopkCompressor(compress_ratio,rank=hvd.rank())
+        compressor = TraditionalTopkCompressor(compress_ratio,rank=hvd.rank())
     
-    elif compress_name == 'globaltopkfcef':
-        from ADTopklib.compressor.globaltopkfcef import GlobalTopkFcEFCompressor
+    elif compress_name == 'powersgd':
+        from ADTopklib.compressor.powersgd import PowerSGDCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
         model_named_parameters = params.get('model_named_parameters')
-        compressor = GlobalTopkFcEFCompressor(compress_ratio,rank=hvd.rank())
+        compressor = PowerSGDCompressor(compress_ratio,rank=hvd.rank())
 
-    elif compress_name == 'allchanneltopk':
-        from ADTopklib.compressor.allchanneltopk import AllChannelTopkCompressor
+    elif compress_name == 'threshold':
+        from ADTopklib.compressor.threshold import ThresholdCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
         model_named_parameters = params.get('model_named_parameters')
-        compressor = AllChannelTopkCompressor(compress_ratio,rank=hvd.rank())
+        compressor = ThresholdCompressor(compress_ratio,rank=hvd.rank())
     
     elif compress_name == 'randomk':
         from ADTopklib.compressor.randomk import RandomKCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
         model_named_parameters = params.get('model_named_parameters')
         compressor = RandomKCompressor(compress_ratio,rank=hvd.rank())
-
-    elif compress_name == 'allchanneltopk_lstm':
-        from ADTopklib.compressor.allchanneltopk_lstm import AllChannelTopkCompressor_LSTM
-        compress_ratio = params.get('compress_ratio', 0.01)         
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = AllChannelTopkCompressor_LSTM(compress_ratio,rank=hvd.rank()) 
-
-    elif compress_name == 'actopk_lstm':
-        from ADTopklib.compressor.actopk_lstm import ACTopkInterleavingCompressor_LSTM
-        compress_ratio = params.get('compress_ratio', 0.01)         
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkInterleavingCompressor_LSTM(compress_ratio,rank=hvd.rank()) 
-        compressor.initialize(model_named_parameters)
-
-    elif compress_name == 'actopkthreshold_resnet':
-        from ADTopklib.compressor.actopkthreshold_resnet import ACTopkThresholdResNetCompressor
-        compress_ratio = params.get('compress_ratio', 0.01)
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkThresholdResNetCompressor(compress_ratio,rank=hvd.rank())
-        compressor.initialize(model_named_parameters)
-
-
-    elif compress_name == 'actopkthreshold_vgg':
-        from ADTopklib.compressor.actopkthreshold_vgg import ACTopkThresholdVGGCompressor
-        compress_ratio = params.get('compress_ratio', 0.01)
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkThresholdVGGCompressor(compress_ratio,rank=hvd.rank())
-        compressor.initialize(model_named_parameters)
-        
-
-    elif compress_name == 'actopkthreshold_lstm':
-        from ADTopklib.compressor.actopkthreshold_lstm import ACTopkThresholdLSTMCompressor
-        compress_ratio = params.get('compress_ratio', 0.01)
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkThresholdLSTMCompressor(compress_ratio,rank=hvd.rank())
-        compressor.initialize(model_named_parameters)
-    
-
-    elif compress_name == 'actopkthreshold_bert':
-        from ADTopklib.compressor.actopkthreshold_bert import ACTopkThresholdBertCompressor
-        compress_ratio = params.get('compress_ratio', 0.01)
-        model_named_parameters = params.get('model_named_parameters')
-        compressor = ACTopkThresholdBertCompressor(compress_ratio,rank=hvd.rank())
-        compressor.initialize(model_named_parameters)
-
 
     else:
         raise NotImplementedError(compressor)
@@ -207,8 +142,7 @@ def get_config(params):
 # VGG16: 'features.0' should not be compressed
 # VGG16: EF on the 'classifier.6' will harm the performance
 # LSTM: 'rnn.weight_hh' should not be compressed
-def check_not_compress(params, name, tensor):
-    
+def check_not_compress(params, name, tensor):    
     if tensor.dim() == 1:
         return True
     if 'features.0' in name:
@@ -218,11 +152,8 @@ def check_not_compress(params, name, tensor):
 
     return False
 
-
 def check_not_ef(params, name, tensor):
-
     compressor_name = params.get('compressor', 'none')
-
     if 'adtopk' in compressor_name or 'alldimensiontopk' in compressor_name:
         if 'fc' in name:
             return True

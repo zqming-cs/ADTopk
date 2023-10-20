@@ -837,7 +837,7 @@ def main():
     
     parser.add_argument('--use-adasum', action='store_true', default=False,
                     help='use adasum algorithm to do reduction')
-    parser.add_argument('--compressor', default='actopk',type=str, help='compressor type')
+    parser.add_argument('--compressor', default='adtopk',type=str, help='compressor type')
 
 
     args = parser.parse_args()
@@ -1016,8 +1016,6 @@ def main():
 
         import ADTopklib
 
-        # Horovod: wrap optimizer with DistributedOptimizer.
-        # 得到一个分布式的SGD优化器
         optimizer = ADTopklib.DistributedOptimizer(
             optimizer, comm_params=comm_params, named_parameters=model.named_parameters())
     

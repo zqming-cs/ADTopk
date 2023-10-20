@@ -1,5 +1,4 @@
 # Copyright (c) 2020, King Abdullah University of Science and Technology (KAUST)  
-
 from abc import ABC, abstractmethod
 from .optimizer import DistributedOptimizer
 
@@ -12,7 +11,6 @@ class Memory(ABC):
     def update(self, tensor, name, compressor, tensor_compressed, ctx):
         """Update the residuals."""
         pass
-
 
 class Compressor(ABC):
     """Interface for compressing and decompressing a given tensor."""

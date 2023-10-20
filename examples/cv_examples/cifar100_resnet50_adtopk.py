@@ -18,7 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'../'))
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-
+import ADTopklib
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Cifar100 Example',
@@ -331,32 +331,14 @@ if __name__ == '__main__':
                               lr_scaler),
                           momentum=args.momentum, weight_decay=args.wd)
 
-
-
-    # comm_params = {
-    #     'comm_mode':'allgather_fast',
-    #     'compressor':'allchanneltopk',
-    #     'memory':'residual',
-    #     'send_size_aresame':True,
-    #     'model_named_parameters': model.named_parameters()
-    # }
-
     comm_params = {
         'comm_mode':'allgather_fast',
-        'compressor':'actopk_resnet50',
+        'compressor':'adtopk',
         'memory':'residual',
         'send_size_aresame':True,
         'model_named_parameters': model.named_parameters()
     }
 
-
-    # Horovod: wrap optimizer with DistributedOptimizer.
-    # 得到一个分布式的SGD优化器
-
-    import dev_actopklib
-
-    # Horovod: wrap optimizer with DistributedOptimizer.
-    # 得到一个分布式的SGD优化器
     optimizer = ADTopklib.DistributedOptimizer(
         optimizer, comm_params=comm_params, named_parameters=model.named_parameters())
 
@@ -370,8 +352,7 @@ if __name__ == '__main__':
     for epoch in range(resume_from_epoch, args.epochs):
         train(epoch)
         validate(epoch)
-        
-        # 保存最后一个训练模型
+
         # if epoch==args.epochs-1:
         #     save_checkpoint(epoch)
 

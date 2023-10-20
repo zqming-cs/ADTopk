@@ -23,7 +23,7 @@ export DIR_Model="/data/dataset/nlp/bert/pre-model/bert-base-uncased/uncased_L-1
 export DIR_DataSet="/data/dataset/nlp/bert"
 
 
-compressor=${1:-"actopk"}
+compressor=${1:-"adtopk"}
 init_checkpoint=${2:-"$DIR_Model/bert_base_wiki.pt"}
 epochs=${3:-"2.0"}
 batch_size=${4:-"4"}

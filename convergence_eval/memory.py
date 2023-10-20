@@ -14,7 +14,6 @@ class Memory(ABC):
     def update(self, tensor, name, compressor, tensor_compressed, ctx):
         pass
 
-
 class NoneMemory(Memory):
 
     def __init__(self):         
@@ -28,8 +27,6 @@ class NoneMemory(Memory):
     def update(self, tensor, name, compressor, tensor_compressed, ctx):
         """Update the residuals."""
         pass
-
-
 
 class ResidualMemory(Memory):
     def __init__(self, beta=1.0, gamma=1.0):

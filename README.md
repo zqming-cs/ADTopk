@@ -69,13 +69,13 @@ pip install -e .
 ## Training with ADTopk
 To run CV jobs:
 ```
-./examples/cv_examples/run.sh -d cifar100 -m vgg16 -c actopk -e 80
+./examples/cv_examples/run.sh -d cifar100 -m vgg16 -c adtopk -e 80
 ```
 Assume that you have 8 GPUs on a single node and everything works well, you will see that there are 8 workers running at a single node training the VGG16 model for 80 epochs with the Cifar-100 dataset using ADTopk sparsification scheme.
 
 To run NLP jobs:
 ```
-./examples/nlp_examples/lstm/run.sh -d wikitext-2 -c actopk -e 80
+./examples/nlp_examples/lstm/run.sh -d wikitext-2 -c adtopk -e 80
 ```
 
 ## Papers

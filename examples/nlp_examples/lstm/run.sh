@@ -4,7 +4,7 @@ func() {
     echo "Usage:"
     echo "run.sh [-d dataset] [-c compressor] [-e epochs]"
     echo "dataset:      wikitext-2, wikitext-103"
-    echo "compressor:   none, actopk, allchanneltopk, globaltopk, dgc, gaussiank, redsync, sidco"
+    echo "compressor:   none, adtopk, allchanneltopk, globaltopk, dgc, gaussiank, redsync, sidco"
     exit -1
 }
 
@@ -19,7 +19,7 @@ while getopts 'h:d:c:e:' OPT; do
 done
 
 dataset="${dataset:-wikitext-2}"
-compressor="${compressor:-actopk}"
+compressor="${compressor:-adtopk}"
 epochs="${epochs:-80}"
 
 

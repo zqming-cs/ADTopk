@@ -12,7 +12,6 @@ class ResidualGlobalTopkMemory(Memory):
     def compensate(self, tensor, name):
         """Update the tensor with the residuals."""
 
-        # return tensor
         if name in self.residuals:
             tensor = self.beta * self.residuals[name] +self.afa * self.residuals_global[name] + self.gamma * tensor
         return tensor
@@ -34,11 +33,8 @@ class ResidualGlobalTopkMemory(Memory):
             tensors_aggregated_avg = self.beta * self.residuals_global[name] + self.gamma * tensors_aggregated_avg
         return tensors_aggregated_avg
 
-
     def update_gtopk(self,ctx,tensor_decompressed, tensors_aggregated_avg, original_tensor, name):
         """Update the residuals."""
 
         residual = self.tensor_decompressed_[name] - tensors_aggregated_avg
-
-
         self.residuals_global[name] = residual

@@ -21,7 +21,7 @@ dnn="${dnn:-vgg16}"
 density="${density:-0.01}"
 source exp_configs/cifar100_vgg16.conf
 # compressor="${compressor:-density}"
-compressor="${compressor:-actopk}"
+compressor="${compressor:-adtopk}"
 nworkers="${nworkers:-8}"
 
 max_epochs="${max_epochs:-80}"
