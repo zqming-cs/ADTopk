@@ -32,9 +32,6 @@ nwpernode=1
 sigmascale=2.5
 PY=python
 
-# scp -r /home/user/mzq/workspaces/project/grace/examples/SparDL/*  user@node17:/home/user/mzq/workspaces/project/grace/examples/SparDL
-
-
 # srun $PY -m mpi4py main_trainer.py --dnn $dnn --dataset $dataset --max-epochs $max_epochs --batch-size $batch_size --nworkers $nworkers --data-dir $data_dir --lr $lr --nwpernode $nwpernode --nsteps-update $nstepsupdate --compression --sigma-scale $sigmascale --density $density --compressor $compressor
 # mpiexec -mca btl_tcp_if_include  ens39f1np1 -n $nworkers -host node16:1,node17:1 /home/user/anaconda3/envs/py39/bin/python  main_trainer_node.py  --dnn $dnn --dataset $dataset --max-epochs $max_epochs --batch-size $batch_size --nworkers $nworkers --data-dir $data_dir --lr $lr --nwpernode $nwpernode --nsteps-update $nstepsupdate --compression --sigma-scale $sigmascale --density $density --compressor $compressor  
 
