@@ -1,11 +1,9 @@
 # ADTopk
-ADTopk is an an all-dimension Top-k sparsification scheme for Distributed DNN Training Systems, which selects the largest *k*
-gradient elements from *all* dimensions, meaning that each dimension must provide some elements, so as to avoid the
-dimension missing. Further, ADTopk enables each dimension to perform sorting locally within the elements of the dimension, and thus all dimensions can perform multiple local sorting independently and parallelly, instead of a single global sorting.
+ADTopk is an all-dimension Top-k sparsification scheme, called ADTopk, which selects the largest 𝑘 elements from all dimensions of the gradient in each layer, meaning that each dimension must provide some elements, so as to avoid the dimension missing. Further, ADTopk enables each dimension to perform sorting locally within the elements of the dimension, and thus all dimensions can perform multiple local sortings independently and parallelly, instead of a single global sorting for the entire gradient in each layer. 
 
-On top of ADTopk, we further propose an interleaving compression scheme and an efficient threshold estimation algorithm so as to enhance the performance of ADTopk. We build a sparsification compression distributed DNN training framework and implement a compression library containing state-of-the-art sparsification algorithms.
+On top of ADTopk, we further propose an interleaving compression scheme and an efficient threshold estimation algorithm so as to enhance the performance of ADTopk. We build a sparsification compression data-parallel DNN training framework and implement a compression library containing state-of-the-art sparsification algorithms.
 
-## Introduction
+<!-- ## Introduction
 This repository contains the codes for the paper: ADTopk: All-Dimension Top-k Sparsification Compression for Distributed DNN Training Systems. 
 In this paper, we observe that there exist two challenges when considering dimensions in the traditional Top-k sparsification:
 - **Challenge #1 (Dimension missing).** 
@@ -21,9 +19,9 @@ challenges: the dimension missing and the single global sorting. We propose ADTo
 - We design ADTopk, which leverages its all dimension based gradient sparsification to realize matrix-based sparsification and multiple local sorting which handles the dimension missing and the single global sorting, respectively. Atop ADTopk, we also propose an interleaving compression scheme that accelerates the convergence of the model and an efficient threshold estimation algorithm that reduces the compression overhead. We finally integrate ADTopk into Stochastic Gradient Descent (SGD) algorithm and prove its convergence.
 - We implement a distributed DNN training framework with a compression library containing our ADTopk and state-of-the-art sparsification algorithms (DGC, Gaussiank, Redsync, and OkTopk). We also implement communication libraries (Allreduce, Allgather, and our proposed AllgatherFast) to support different threshold-based sparsification communication schemes.
 
-For more details about the algorithm, please refer to our paper.
+For more details about the algorithm, please refer to our paper. -->
 
-## Implementation
+<!-- ## Implementation
 We implement our prototype system based on Horovod, a popular distributed deep-learning training framework. Based
 on the framework, we implement ADTopk in PyTorch, which consists of an interleaving compression module, an
 efficient threshold sparsification module, a communication and aggregation module, and a residual gradient error feedback module.
@@ -48,7 +46,7 @@ of Horovod. In `DistributedOptimizer`, we provide three collective communication
 - We also implement another alternative primitive called `AllgatherFast`, which speeds up communication by eliminating the gradient split step compared to `Allgather`.
 
 ### Residual gradient error feedback module
-In this module, we implement an error feedback API, including includes a `memory.compensate` function that accumulates residual into a locally generated gradient and a `memory.update` function that calculates the difference between the compensated gradient and the compressed gradient to update the residual and store it in memory.
+In this module, we implement an error feedback API, including includes a `memory.compensate` function that accumulates residual into a locally generated gradient and a `memory.update` function that calculates the difference between the compensated gradient and the compressed gradient to update the residual and store it in memory. -->
 
 
 ## Installation
