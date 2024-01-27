@@ -25,8 +25,8 @@ This code repository covers:
 
 We use the PyTorch framework and implemented the prototype system of __ADTopk__ based on the [Horovod](https://github.com/horovod/horovod) framework using NCCL as the communication library. Overview of our system is as follows.
 
-![Overview](Overview.jpg)
-
+<!-- ![Overview](Overview.jpg) -->
+<img src="Overview.jpg" width="600px" />
 
 # Installation
 ### Prerequisites
