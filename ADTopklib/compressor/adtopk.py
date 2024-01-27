@@ -8,7 +8,6 @@ import math
 import scipy.stats as stats
 import time
 
-
 class ADTopkCompressor(Compressor):
 
     def __init__(self, compress_ratio, rank):

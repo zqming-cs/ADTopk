@@ -4,6 +4,8 @@ from horovod.torch import allgather, allgather_async, synchronize
 import horovod.torch as hvd
 import numpy as np
 
+
+
 class AllgatherEval():
     def __init__(self, compressor, memory, world_size, lr=1.0):
         self.compressor = compressor
