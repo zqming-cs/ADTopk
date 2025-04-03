@@ -27,7 +27,7 @@ We use the PyTorch framework and implemented the prototype system of __ADTopk__ 
 
 <!-- ![Overview](Overview.jpg) -->
 <center class ='img'>
-<img src="overview.jpg" width="700px" />
+<img src="overview_1.jpg" width="700px" />
 </center>
 
 # Installation
