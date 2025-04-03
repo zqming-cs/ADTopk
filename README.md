@@ -30,6 +30,10 @@ We use the PyTorch framework and implemented the prototype system of __ADTopk__ 
 <img src="overview_1.jpg" width="700px" />
 </center>
 
+
+We implement __ADTopk__, which mainly consists of four main modules, an interleaving compression module (i.e., __ADTopk__-i), a threshold estimation sparsification module (i.e., __ADTopk__-t), a communication and aggregation module, a residual gradient error feedback module, and a scalable heterogeneous training module (i.e., __ADTopk__-s).
+We also implement an experimental proof module to prove the stable convergence of __ADTopk__ distributed SGD on multiple training tasks.
+
 # Installation
 ### Prerequisites
 - CUDA-11.6
