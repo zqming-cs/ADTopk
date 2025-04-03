@@ -324,9 +324,9 @@ if __name__ == '__main__':
     # params = {'compressor': 'allchanneltopk', 'memory': 'residual', 'communicator': 'allgather'}
     # communicator = get_communicator(params)
 
-    from convergence_eval.compressor import TopKCompressor, AllChannelTopkCompressor     
-    from convergence_eval.memory import ResidualMemory     
-    from convergence_eval.comm import AllgatherEval      
+    from convergence_proof.compressor import TopKCompressor, AllChannelTopkCompressor     
+    from convergence_proof.memory import ResidualMemory     
+    from convergence_proof.comm import AllgatherEval      
     compressor = AllChannelTopkCompressor(0.05)     
     memory = ResidualMemory()     
     communicator = AllgatherEval(compressor=compressor, memory=memory, world_size=hvd.size())  

@@ -233,9 +233,9 @@ best_val_loss = None
 optimizer = optim.SGD(model.parameters(), lr=lr)
 
 
-from convergence_eval.compressor import TopKCompressor, AllChannelTopkCompressor 
-from convergence_eval.memory import ResidualMemory 
-from convergence_eval.comm import AllgatherEval  
+from convergence_proof.compressor import TopKCompressor, AllChannelTopkCompressor 
+from convergence_proof.memory import ResidualMemory 
+from convergence_proof.comm import AllgatherEval  
 
 compressor = TopKCompressor(0.01) 
 compressor = AllChannelTopkCompressor(0.01) 
