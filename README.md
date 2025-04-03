@@ -1,4 +1,4 @@
-# ADTopk
+# ADTopk: All-Dimension Top-k Compression for High-Performance Data-Parallel DNN Training
 __ADTopk__  is an all-dimension Top-k sparsification scheme, which selects the largest 𝑘 elements from all dimensions of the gradient in each layer, meaning that each dimension must provide some elements, so as to avoid the dimension missing. Further, __ADTopk__ enables each dimension to perform sorting locally within the elements of the dimension, and thus all dimensions can perform multiple local sortings independently and parallelly, instead of a single global sorting for the entire gradient in each layer. 
 
 On top of __ADTopk__, we further propose an interleaving compression scheme and an efficient threshold estimation algorithm so as to enhance the performance of __ADTopk__. We build a sparsification compression data-parallel DNN training framework and implement a compression library containing state-of-the-art sparsification algorithms.
