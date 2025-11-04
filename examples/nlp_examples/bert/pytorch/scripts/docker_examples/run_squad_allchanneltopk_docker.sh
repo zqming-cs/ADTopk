@@ -13,18 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# SQUAD_DIR='/home/mzq/mingzq/workspaces/project/grace/examples/torch/nlp/bert/dataset/squad/'
-# BERT_BASE_DIR='/home/mzq/mingzq/workspaces/project/grace/examples/torch/nlp/bert/pre-model/bert-base-uncased/uncased_L-12_H-768_A-12/'
+# SQUAD_DIR='./examples/torch/nlp/bert/dataset/squad/'
+# BERT_BASE_DIR='./examples/torch/nlp/bert/pre-model/bert-base-uncased/uncased_L-12_H-768_A-12/'
 
 
 echo "Container nvidia build = " $NVIDIA_BUILD_ID
 
-# export DIR_Model="/home/mzq/mingzq/workspaces/project/grace/examples/torch/nlp/bert/pre-model/bert-large-uncased/uncased_L-24_H-1024_A-16"
+# export DIR_Model="./examples/torch/nlp/bert/pre-model/bert-large-uncased/uncased_L-24_H-1024_A-16"
 export DIR_Model="/horovod/dataset/nlp/bert/pre-model/bert-base-uncased/uncased_L-12_H-768_A-12"
 export DIR_DataSet="/horovod/dataset/nlp/bert"
 
 
-# init_checkpoint=${1:-"/home/mzq/mingzq/workspaces/project/grace/examples/torch/nlp/bert/pre-model/bert-base-uncased/uncased_L-12_H-768_A-12/bert_model.ckpt"}
+# init_checkpoint=${1:-"./examples/torch/nlp/bert/pre-model/bert-base-uncased/uncased_L-12_H-768_A-12/bert_model.ckpt"}
 # init_checkpoint=${1:-"$DIR_Model/bert_model.ckpt"}
 init_checkpoint=${1:-"$DIR_Model/bert_base_wiki.pt"}
 epochs=${2:-"2.0"}

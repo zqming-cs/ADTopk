@@ -402,7 +402,7 @@ def get_train_features(data_dir, bert_model, max_seq_length, do_lower_case,
     )
     train_features = None
     try:
-        # cached_train_features_file='/home/mzq/mingzq/workspaces/project/grace/examples/torch/nlp/bert/pre-model/bert-base-uncased-sst2/pytorch_model.bin'
+        # cached_train_features_file='./examples/torch/nlp/bert/pre-model/bert-base-uncased-sst2/pytorch_model.bin'
         with open(cached_train_features_file, "rb") as reader:
         # with open(cached_train_features_file, "rb") as reader:
             train_features = pickle.load(reader)

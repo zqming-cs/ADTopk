@@ -14,7 +14,7 @@ import model
 from torch.optim import lr_scheduler
 
 parser = argparse.ArgumentParser(description='PyTorch Wikitext-2 RNN/LSTM/GRU/Transformer Language Model')
-parser.add_argument('--data', type=str, default='/home/user/mzq/workspaces/project/grace/examples/torch/nlp/data/wikitext-2',
+parser.add_argument('--data', type=str, default='./data/wikitext-2',
                     help='location of the data corpus')
 parser.add_argument('--model', type=str, default='LSTM',
                     help='type of network (RNN_TANH, RNN_RELU, LSTM, GRU, Transformer)')

@@ -310,7 +310,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         idx = 0
         for k in self._sequential_keys[::-1]:
 
-            # BERT-base Debug, mingzq
+            # BERT-base Debug, 
             if 'pooler' in k:
                 continue
 
@@ -794,7 +794,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
 
             # 
             for i, idx in enumerate(self._groups_flags[group_idx]):
-                # Debug bert_base mingzq
+                # Debug bert_base 
                 # if self._model_net_name=='bert_base' and (i==2 or i==3):
                 #     continue
                 
@@ -874,7 +874,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
 
             for i, idx in enumerate(self._groups_flags[group_idx]):
                 # 
-                # Debug bert_base mingzq
+                # Debug bert_base 
                 # if self._model_net_name=='bert_base' and (i==2 or i==3):
                 #     continue
                 # 
@@ -1294,7 +1294,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                     if self._fp16:
                         p.grad.set_(tensors[n].data.type(p.grad.type()))
                     else:
-                        # Debug bert_base mingzq
+                        # Debug bert_base 
                         # if p.grad is not None:
                         #     p.grad.set_(tensors[n].data)
                         p.grad.set_(tensors[n].data)
