@@ -65,21 +65,35 @@ HOROVOD_GPU_OPERATIONS=NCCL pip install horovod==0.28.1
 pip install -e .
 ```
 
+## **Quick start**
 
+The primary benchmark is provided in `examples`. 
+For example, we can use the following command to run the benchmark on 8 GPUs, with sparsification algorithm as adtopk, gaussiank, sidco, and dgc, communication primitives as All-Reduce and All-Gather, memory as residual.
+ 
+**To run BERT-large training job:**
+```
+cd ADTopk/examples/nlp_examples/bert/scripts
+bash run_squad_bert.sh
+```
 
-# Quick start
-**To run CV training job:**
+**To run GPT2-large training job:**
 ```
-cd ./examples/cv_examples/
-bash run.sh
+cd ADTopk/examples/nlp_examples/gpt
+bash run_clm_no_trainer_hvd_103.sh
 ```
 
+**To run ViT-large training job:**
+```
+cd ADTopk/examples/cv_examples/vit
+bash run_imagenet_no_trainer.sh
+```
 
-**To run NLP training job:**
+**To run ResNet-152 training job:**
 ```
-cd ./examples/nlp_examples/bert/pytorch/scripts
-bash run_squad.sh
+cd ADTopk/example/cv_examples/resnet
+bash run_imagenet_resnet152.sh
 ```
+
 
 # Papers
 An 11-page conference version of this paper appeared in the _Proceedings of the 33rd International Symposium on High-Performance Parallel and Distributed Computing (HPDC2024)_, June 2024.
