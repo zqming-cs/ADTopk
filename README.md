@@ -59,7 +59,7 @@ The workflow of the __ADTopk__ System：
 
 
 
-### Install ADTopk
+### Install __ADTopk__
 ```
 git clone https://github.com/zqming-cs/ADTopk.git
 cd ADTopk
@@ -102,7 +102,7 @@ bash run_imagenet_resnet152.sh
 - Enabling Efficient All-Dimension Top-k Sparsification for High-Performance Distributed DNN Training Systems
 
 An earlier version of this paper appeared at the _Proceedings of the 33rd International Symposium on High-Performance Parallel and Distributed Computing (HPDC2024)_, June 2024.
-In this extended version, we enhanced ADTopk with new system-level optimizations, including partial sparsification and hybrid collective communication. We also include new evaluation results and show that our enhanced ADTopk increases training throughput by up to 268.0%.
+In this extended version, we enhanced __ADTopk__ with new system-level optimizations, including partial sparsification and hybrid collective communication. We also include new evaluation results and show that our enhanced __ADTopk__ increases training throughput by up to 268.0%.
 
 
 
