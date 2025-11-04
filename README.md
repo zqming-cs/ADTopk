@@ -60,17 +60,21 @@ We also implement an experimental proof module to prove the stable convergence o
 git clone https://github.com/User/ADTopk.git
 cd ADTopk
 pip install -r requirements.txt
-HOROVOD_GPU_OPERATIONS=NCCL pip install horovod==0.21.3
+HOROVOD_GPU_OPERATIONS=NCCL pip install horovod==0.28.1
 pip install -e .
 ```
 
+
+
 # Quick start
-To run CV jobs:
+**To run CV training job:**
 ```
 cd ./examples/cv_examples/
 bash run.sh
 ```
-To run NLP jobs:
+
+
+**To run NLP training job:**
 ```
 cd ./examples/nlp_examples/bert/pytorch/scripts
 bash run_squad.sh

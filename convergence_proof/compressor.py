@@ -8,7 +8,9 @@ class Compressor(ABC):
     def __init__(self, average=True, tensors_size_are_same=True):
         self.average = average
         self.tensors_size_are_same = tensors_size_are_same
-
+        
+        
+        
     @abstractmethod
     def compress(self, tensor, name):
         """Compresses a tensor and returns it with the context needed to decompress it."""
