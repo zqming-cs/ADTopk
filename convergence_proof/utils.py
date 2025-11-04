@@ -10,6 +10,7 @@ def topk(tensor, compress_ratio=0.01):
     tensors = values, indices
     tensor_decompressed = torch.zeros(
         numel, dtype=values.dtype, layout=values.layout, device=values.device).cuda()
-
+    
+    
     tensor_decompressed.scatter_(0, indices, values)
     return tensor_decompressed
