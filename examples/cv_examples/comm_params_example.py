@@ -7,6 +7,8 @@ comm_params = {
 }
 
 
+
+
 # Allreduce
 # when allreduce are used, the value of send_size_aresame does not matters. 
 # Sparsify compression methods do not support allreduce. 
@@ -36,6 +38,8 @@ comm_params = {
     'memory':'residual',
     'send_size_aresame':True
 }
+
+
 
 
 
