@@ -55,9 +55,10 @@ We also implement an experimental proof module to prove the stable convergence o
 - [Tqdm](https://github.com/tqdm/tqdm)
 
 
+
 ### Install ADTopk
 ```
-git clone https://github.com/User/ADTopk.git
+git clone https://github.com/zqming-cs/ADTopk.git
 cd ADTopk
 pip install -r requirements.txt
 HOROVOD_GPU_OPERATIONS=NCCL pip install horovod==0.28.1
