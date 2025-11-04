@@ -93,7 +93,7 @@ bash run_imagenet_no_trainer.sh
 
 **To run ResNet-152 training job:**
 ```
-cd ADTopk/example/cv_examples/resnet
+cd ADTopk/examples/cv_examples/resnet
 bash run_imagenet_resnet152.sh
 ```
 

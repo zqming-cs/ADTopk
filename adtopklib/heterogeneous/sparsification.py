@@ -7,7 +7,7 @@ import horovod.torch as hvd
 import numpy as np
 
 # 
-# 20250328
+# 
 # Layer-wise adaptive sparsification compression scheme
 # Online sparsification density adjustment scheme
 class LayerWiseAllChannelTopkCompressor(Compressor):
