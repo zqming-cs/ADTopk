@@ -43,6 +43,8 @@ The workflow of the __ADTopk__ System：
 <center class ='img'>
 <img src="overview_2.jpg" width="800px" />
 </center>
+
+
 # Installation
 ## **Prerequisites**
 - [CUDA-12.0](https://developer.nvidia.com/cuda-12-0-0-download-archive)
@@ -97,13 +99,14 @@ bash run_imagenet_resnet152.sh
 
 
 # Papers
+- Enabling Efficient All-Dimension Top-k Sparsification for High-Performance Distributed DNN Training Systems
+
 An 11-page conference version of this paper appeared in the _Proceedings of the 33rd International Symposium on High-Performance Parallel and Distributed Computing (HPDC2024)_, June 2024.
 In this extended version, we enhanced ADTopk with new system-level optimizations, including partial sparsification and hybrid collective communication. We also include new evaluation results and show that our enhanced ADTopk increases training throughput by up to 268.0%.
 
 
-- Enabling Efficient All-Dimension Top-k Sparsification for High-Performance Distributed DNN Training Systems
 
-
+# Citation
 If you are using this repository for your paper, please cite our previous work
 ```
 @inproceedings{ming2024adtopk,
@@ -124,7 +127,6 @@ If you are using this repository for your paper, please cite our previous work
 
 # License
 See [LICENSE](https://github.com/zqming-cs/ADTopk/blob/main/LICENSE).
-
 
 
 
