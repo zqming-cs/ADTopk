@@ -47,7 +47,7 @@ The workflow of the __ADTopk__ System：
 
 # Installation
 ## **Prerequisites**
-- [CUDA-12.0](https://developer.nvidia.com/cuda-12-0-0-download-archive)
+- [CUDA-12.4](https://developer.nvidia.com/cuda-12-4-0-download-archive)
 - [Python >= 3.12](https://www.python.org/downloads/release/python-312)
 - [NCCL-2.8.3](https://github.com/NVIDIA/nccl)
 - [PyTorch-2.3.+](https://github.com/pytorch/pytorch)
