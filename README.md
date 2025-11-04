@@ -10,6 +10,11 @@ This code repository covers:
 
 ### ADTopk Framework
 
+<!-- - __ADTopk(Naive)__: All-dimension Top-k Sparsification
+- __ADTopk-I__: Interleaved sparsification
+- __ADTopk-P__: Partial sparsification
+- __ADTopk-H__: Hybrid collective communication -->
+
 - __ADTopk__ avoids dimension missing via a matrix-based sparsification to enhance convergence accuracy, and increases GPU core parallelism via a multiple local sorting to improve sparsification efficiency.
 - __ADTopk__ employs an interleaved sparsification scheme to combine ADTopk and the traditional Top-𝑘 to speed up the convergence.
 - __ADTopk__ employs a partial sparsification scheme via minimizing communication idle periods to to reduce the sparsification overhead.
