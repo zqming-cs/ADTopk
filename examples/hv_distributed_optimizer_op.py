@@ -100,8 +100,7 @@ import threading
 from queue import Queue
 
 
-# 
-# THRESHOLD = 163840 #4*8192 
+
 p_alpha_beta_56Gbps = {
         64: (0.00080632079996292579, 1.8*3.2713239529771973e-10),
         32: (0.00040632079996292579, 1.5*3.2713239529771973e-10),
@@ -124,7 +123,7 @@ p_alpha_beta_10Gbps = {
 
 
 class _DistributedOptimizer(torch.optim.Optimizer):
-    def __init__(self, model_net_name, params, named_parameters, compression, is_sparse=False, density=0.001, seq_layernames=None, layerwise_times=None, norm_clip=None, threshold=0, writer=None, gradient_path=None, momentum_correction=False, fp16=False, mgwfbp=False, rdma=False, asc=False):
+    def __init__(self, model_net_name, params, named_parameters, compression, is_sparse=False, density=0.001, seq_layernames=None, layerwise_times=None, norm_clip=None, writer=None, gradient_path=None, momentum_correction=False, fp16=False, mgwfbp=False, rdma=False, asc=False):
         super(self.__class__, self).__init__(params)
         self._model_net_name = model_net_name
         
@@ -136,7 +135,6 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         self._layerwise_times = layerwise_times 
         self._original_layerwise_times_kv = None
         self._norm_clip = norm_clip
-        self._threshold = threshold
         self._writer = writer
         self._gradient_path = gradient_path
         self._fp16 = fp16
@@ -162,11 +160,11 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         self.hook_communication_time = 0
         
         self.offset_compress = 0
-
-
-        self._offload = True
+        
+        # 
+        # Turn off sparsification offloading
+        self._offload = False
         if self._offload:
-            # 
             # 
             self._download_queue = Queue()
             self._upload_queue = Queue()
@@ -174,11 +172,8 @@ class _DistributedOptimizer(torch.optim.Optimizer):
             self._async_thread = threading.Thread(target=_DistributedOptimizer.async_compression,args=(self._download_queue,self._upload_queue,self._compression))
             self._async_thread.start()
         
-
         if density < 1:
-            # self._dynamic_densities = [0.015625, 0.004, 0.001]
             self._layerwise_compressors= {}
-            # self._dynamic_densities = [0.25, 0.0625, 0.015625, 0.004, 0.001] # the setting used in DGC
             self._dynamic_densities = None 
         else:
             self._dynamic_densities = None 
@@ -226,12 +221,12 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         if size() > 1:
             self._register_hooks()
 
-        self.generate_threshold()
+        self.generate_partial_selection()
         #  
         self._layerwise = 'layerwise' in type(self._compression).__name__.lower()
         print(f'layerwise_setting: {self._layerwise}')
         if self._layerwise:
-            self.generate_threshold()
+            self.generate_partial_selection()
         else:
             self._offload = False
 
@@ -248,8 +243,8 @@ class _DistributedOptimizer(torch.optim.Optimizer):
             model.fit(X, Y)
             alpha = model.intercept_
             beta = model.coef_[0]
-            #A = np.vstack([X, np.ones(len(X))]).T
-            #beta, alpha = np.linalg.lstsq(A, Y, rcond=None)[0]
+            # A = np.vstack([X, np.ones(len(X))]).T
+            # beta, alpha = np.linalg.lstsq(A, Y, rcond=None)[0]
             return alpha, beta
         alpha, beta = _fit_linear_function(sizes, times)
         self.alpha = alpha
@@ -261,10 +256,11 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         if rank() != 0:
             self.alpha = float(alpha_tensor[0])
             self.beta = float(beta_tensor[0])
-        #logger.info('[rank:{}] Communication performance fitted with f(p)=a+b*p, where a={} and b={}'.format(rank(), self.alpha, self.beta))
-
+        # logger.info('[rank:{}] Communication performance fitted with f(p)=a+b*p, where a={} and b={}'.format(rank(), self.alpha, self.beta))
+        # 
+        
     def _benchmark_communication2(self):
-        #logger.info('Benchmarking communication performance for the current DL model')
+        # logger.info('Benchmarking communication performance for the current DL model')
         sizes = [self._named_parameters[k].data.numel() for k in self._sequential_keys][::-1] # reverse from L to 1
         all_combined_sizes = []
         for i in range(len(sizes)):
@@ -795,20 +791,6 @@ class _DistributedOptimizer(torch.optim.Optimizer):
             self._merged_parameters[new_key].data[offset:offset+numel].copy_(tensor.view(numel))
 
             self._groups_flags[group_idx][layer_idx] = 1
-            
-            # if self._model_net_name=='bert_base' and len()
-            
-            # if rank()==0:   
-            #     print('self._groups_flags[group_idx] =',self._groups_flags[group_idx])
-            #     print('len(self._groups_flags[group_idx]) =', len(self._groups_flags[group_idx]) )
-            #     print('group_idx=',group_idx, 'layer_idx=', layer_idx)
-                             
-                # if layer_idx==2 or layer_idx==3:
-                #     print('self._groups_flags[group_idx] =',self._groups_flags[group_idx])
-                #     print('len(self._groups_flags[group_idx]) =', len(self._groups_flags[group_idx]) )
-                #     print('group_idx=',group_idx, 'layer_idx=', layer_idx)
-                # if layer_idx==0:                    
-                #     print('name =', name)
 
             # 
             for i, idx in enumerate(self._groups_flags[group_idx]):
@@ -878,7 +860,6 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                 self._download_queue.put((kwargs,new_key,offset,layer_idx))
                 self._queue_len += 1
             else:
-                # 
                 # if self._offload:
                 #     while self._queue_len > 0:
                 #         self._queue_len -= 1
@@ -887,21 +868,10 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                 #         self._merged_parameters_indicates[_new_key].data[self.offset_compress:self.offset_compress+numel_compress].copy_(s_indicates.view(numel_compress)+offset)
                 #         self._merged_parameters_values[_new_key].data[self.offset_compress:self.offset_compress+numel_compress].copy_(s_values.view(numel_compress))
                 #         self.offset_compress += numel_compress
-                # 
 
                 result = self._compression.compress(tensor=tensor,name=name,ratio=compress_ratio)
                 self._compressed_tensor_list[layer_idx] = (new_key,result[1],result[2],offset)
-                # 
-                # numel_compress = result[1].numel()
-                # self._merged_parameters_indicates[new_key].data[self.offset_compress:self.offset_compress+numel_compress].copy_(result[1].view(numel_compress)+offset)
-                # self._merged_parameters_values[new_key].data[self.offset_compress:self.offset_compress+numel_compress].copy_(result[2].view(numel_compress))
-                # self.offset_compress += numel_compress
 
-            # tensor_compressed, selected_indicates, selected_values = self._compression.compress(tensor, name, group_size=None, ratio=density)
-
-
-            # 
-            # 
             for i, idx in enumerate(self._groups_flags[group_idx]):
                 # 
                 # Debug bert_base mingzq
@@ -989,16 +959,14 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                 
             if layer_idx <= self.partion_idx[group_idx] and compress_ratio == 1:
                 # 
-                # ADTopk-H: Buffer All-Reduce
-                # 
+                # ADTopk-H:  All-Reduce
                 try:
                     self._merged_parameters_noncompress[new_key].data[self.offset_noncompress:self.offset_noncompress + numel].copy_(tensor.to(self._merged_parameters_noncompress[new_key].data.device).view(numel))
                     self.offset_noncompress += numel
                 except Exception as e:
                     pass
             else:
-                # ADTopk-H: Buffer All-Reduce
-                # 
+                # ADTopk-H:  All-Gather
                 if self._offload and name in self.on_cpu:
                     #  async_compression 
                     kwargs = {'tensor':tensor.to('cpu'),'name':name,'group_size':None,'ratio':compress_ratio}
@@ -1008,18 +976,9 @@ class _DistributedOptimizer(torch.optim.Optimizer):
 
                     result = self._compression.compress(tensor=tensor,name=name,ratio=compress_ratio)
                     self._compressed_tensor_list[layer_idx] = (new_key,result[1],result[2],offset)
-                    # numel_compress = result[1].numel()
-                    # self._merged_parameters_indicates[new_key].data[self.offset_compress:self.offset_compress+numel_compress].copy_(result[1].view(numel_compress)+offset)
-                    # self._merged_parameters_values[new_key].data[self.offset_compress:self.offset_compress+numel_compress].copy_(result[2].view(numel_compress))
-                    # self.offset_compress += numel_compress
-                    # 
-        
-            # 
+
             for i, idx in enumerate(self._groups_flags[group_idx]):
-                # 
-                # if self._model_net_name=='bert_base' and (i==2 or i==3):
-                #     continue
-                # 
+
 
                 if idx == 0:
                     if debug:
@@ -1137,7 +1096,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         return (handle, handle_idx), ctx 
 
 
-    def _sparse_allreduce_async_compress(self, p, name, indices, values):
+    def _sparse_allgather_async_compress(self, p, name, indices, values):
         stime = time.time()
         tensor = p.data.view(-1)        
         
@@ -1223,13 +1182,10 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                         current_stream.synchronize()
                     
                     # 
-                    # 
+                    # Hybrid collective communication
                     if self._sparse and density < 1:
-                        # 
-                        # handle, ctx = self._sparse_allreduce_async(new_tensor, new_name, density)
-                        # self._handles[new_tensor] = (handle, ctx, density)
-                        
-                        handle, ctx = self._sparse_allreduce_async_compress(new_tensor, new_name, indices, values)
+                        #                         
+                        handle, ctx = self._sparse_allgather_async_compress(new_tensor, new_name, indices, values)
                         self._handles[new_tensor] = (handle, ctx, density)
                         
                     else:
@@ -1419,7 +1375,6 @@ class _DistributedOptimizer(torch.optim.Optimizer):
     
     
     # 
-    # 
     def step(self, closure=None):
         if not self.local:
             self.synchronize()
@@ -1428,70 +1383,69 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         
         return super(self.__class__, self).step(closure)
     
-
-
-    def get_threshold(self,arr:list):
+    
+    def get_partial_selection(self,arr:list):
         arr = sorted(arr)
-        elems = max(1,sum(arr) * self._density)
+        elems = max(1, sum(arr) * self._density)
         idx = 0
         while idx < len(arr):
             if arr[idx] >= elems:
                 return arr[idx] - 1
             elems -= arr[idx]
             idx += 1
-        raise ValueError(f'Inexpected error while calculating threshold, with compression ratio {self._density} and arr {arr}')
+        raise ValueError(f'Inexpected error while calculating partial_selection, with compression ratio {self._density} and arr {arr}')
         
 
     @property
-    def valid_threshold(self):
+    def valid_partial_selection(self):
         """
-        get the edge value of the threshold s.t. threshold > value is not applicable and threshold <= value is ok.
+        get the edge value of the partial_selection s.t. partial_selection > value is not applicable and partial_selection <= value is ok.
         """
-        return min([self.get_threshold(group_size) for group_size in self._group_sizes])
+        return min([self.get_partial_selection(group_size) for group_size in self._group_sizes])
     
     
-    def valid_threshold_by_group(self,group_idx:int):
-        return self.get_threshold(self._group_sizes[group_idx])
-
-
-
-    def generate_threshold(self):
-        # 
+    def valid_partial_selection_by_group(self,group_idx:int):
+        return self.get_partial_selection(self._group_sizes[group_idx])
+    
+    # 
+    # Partial Sparsification Selection
+    # 
+    def generate_partial_selection(self):
         # 
         candidate_vals = set([0])
         candidate_vals.update([val for buffer in self._group_sizes for val in buffer])
         candidate_vals = sorted(candidate_vals)
         print(f'candidate_vals = {candidate_vals}')
-        group_threshold = []
+        group_partial_selection = []
         for i,group_size in enumerate(self._group_sizes):
             # 
             expected_val = 0
             total_time = float('inf')
-            valid_threshold = self.valid_threshold_by_group(i)
-            # print(f"valid threshold for group {i} is {valid_threshold}")
+            valid_partial_selection = self.valid_partial_selection_by_group(i)
+            # print(f"valid partial_selection for group {i} is {valid_partial_selection}")
             for val in candidate_vals:
-                if val > valid_threshold:
+                if val > valid_partial_selection:
                     break
                 current_time = self.cal_total_time(val,i)
                 if current_time < total_time:
                     total_time = current_time
                     expected_val = val
-            group_threshold.append(expected_val)
+            group_partial_selection.append(expected_val)
             
             
-        print(f'the best threshold for each group is {group_threshold}\n\
-              and valid_threshold is {self.valid_threshold}')
-        # self.update_threshold([2048 for _ in range(len(self._group_sizes))])
-        self.update_threshold(group_threshold)
+        print(f'the best partial_selection for each group is {group_partial_selection}\n\
+              and valid_partial_selection is {self.valid_partial_selection}')
+        
+        self.update_partial_selection(group_partial_selection)
     
     
-    def cal_total_time(self,threshold:int,group_idx:int):
+    def cal_total_time(self,partial_selection:int,group_idx:int):
         """
         calculate the total time of an iteration, returning the total time of this iteration, float.
         """
-        # if(threshold > self.valid_threshold):
+        # if(partial_selection > self.valid_partial_selection):
         #     import warnings
-        #     warnings.warn(f'threshold {threshold} in cal_total_time for group {group_idx} is too large, this will cause an improper total compression ratio.')
+        #     warnings.warn(f'partial_selection {partial_selection} in cal_total_time for group {group_idx} is too large, this will cause an improper total compression ratio.')
         calculation_end = .0
         communication_end = .0
         sum_numel = sum(sum(group_size) for group_size in self._group_sizes)
@@ -1499,7 +1453,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         communication_numel = 0
         calculation_end += calculation_backward_time_local_8_nodes(sum_numel,sum(group_size),self._model_net_name)
         for layer_size in group_size:
-            if layer_size > threshold:
+            if layer_size > partial_selection:
                 calculation_end += calculation_compression_time_local_8_nodes(layer_size)
                 communication_numel += max(1,int(layer_size * self._density))
             else:
@@ -1508,7 +1462,7 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         return communication_end
     
     
-    def update_threshold(self,threshold_arr:list):
+    def update_partial_selection(self, partial_selection_arr:list):
         """
         calculate the sparsity of each layer, and pass the corresponding dict to compressor.
         """
@@ -1518,18 +1472,16 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         total_tensors = sum([sum(len(group_size) for group_size in self._group_sizes)])
         total_sparse = 0
 
-
         # 
         # Iterate through all buffers
         for i,group_size in enumerate(self._group_sizes):
             # 
             # For each buffer, first calculate whether the tensors in each layer of the buffer need to be compressed, corresponding to layer_Sparsity
-            # 
             total_numel = sum(group_size);total_count = len(group_size)
             fixed_numel = 0;fixed_count = 0
             total_computation_time = calculation_backward_time_local_8_nodes(all_group_size,total_numel,self._model_net_name)
             for j,layer_size in enumerate(group_size):
-                if layer_size <= threshold_arr[i]:
+                if layer_size <= partial_selection_arr[i]:
                     fixed_numel += layer_size
                     fixed_count += 1
                     layer_sparsity[self._groups[i][j]] = 1.0
@@ -1537,22 +1489,19 @@ class _DistributedOptimizer(torch.optim.Optimizer):
                 assert fixed_count < total_count
                 other_sparsity = max(self._density,(total_numel * self._density - fixed_numel) / (total_numel - fixed_numel))
                 for j,layer_size in enumerate(group_size):
-                    if layer_size > threshold_arr[i]:
+                    if layer_size > partial_selection_arr[i]:
                         total_sparse += 1
                         layer_sparsity[self._groups[i][j]] = other_sparsity
                         total_computation_time += calculation_compression_time_local_8_nodes(layer_size)
             
-            
-            # 
             # =====================================================================
-            # 
             cpu_timestamp = 0
             now_time = 0
             last_name = ''
 
             for j,layer_size in enumerate(group_size):
                 now_time += calculation_backward_time_local_8_nodes(all_group_size,layer_size,self._model_net_name)
-                if layer_size <= threshold_arr[i]:
+                if layer_size <= partial_selection_arr[i]:
                     # Not compressed, therefore it is not necessary and impossible to unload to CPU for compression
                     pass
                 elif cpu_timestamp > now_time:
@@ -1578,7 +1527,6 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         # raise ValueError(f'{len(on_cpu)} and {len(on_cpu_)} and {on_cpu == on_cpu_}')
         # 
 
-
         print("successfully upated the layer sparsity")
         # 
         # You should directly attach layer_sparsity and on_cpu to Optimizer.
@@ -1586,12 +1534,11 @@ class _DistributedOptimizer(torch.optim.Optimizer):
         self._dict = layer_sparsity
         self.on_cpu = on_cpu
         # 
-        # self._compression.update_threshold(layer_sparsity,on_cpu)
-        # 
-        # 
+        # self._compression.update_partial_selection(layer_sparsity,on_cpu)
 
 
-def DistributedOptimizer(model_net_name, optimizer, named_parameters=None, compression=None, is_sparse=False, density=0.001, seq_layernames=None, layerwise_times=None, norm_clip=None, threshold=0, writer=None, gradient_path=None, momentum_correction=False, fp16=False, mgwfbp=False, rdma=False, asc=False):
+
+def DistributedOptimizer(model_net_name, optimizer, named_parameters=None, compression=None, is_sparse=False, density=0.001, seq_layernames=None, layerwise_times=None, norm_clip=None, writer=None, gradient_path=None, momentum_correction=False, fp16=False, mgwfbp=False, rdma=False, asc=False):
     """
     An optimizer that wraps another torch.optim.Optimizer, using an allreduce to
     average gradient values before applying gradients to model weights.
@@ -1627,7 +1574,7 @@ def DistributedOptimizer(model_net_name, optimizer, named_parameters=None, compr
     cls = type(optimizer.__class__.__name__, (optimizer.__class__,),
                dict(_DistributedOptimizer.__dict__))
 
-    return cls(model_net_name, optimizer.param_groups, named_parameters, compression, is_sparse, density, seq_layernames=seq_layernames, layerwise_times=layerwise_times, norm_clip=None, threshold=threshold, writer=writer, gradient_path=gradient_path, momentum_correction=momentum_correction, fp16=fp16, mgwfbp=mgwfbp,rdma=rdma,asc=asc)
+    return cls(model_net_name, optimizer.param_groups, named_parameters, compression, is_sparse, density, seq_layernames=seq_layernames, layerwise_times=layerwise_times, norm_clip=None, writer=writer, gradient_path=gradient_path, momentum_correction=momentum_correction, fp16=fp16, mgwfbp=mgwfbp,rdma=rdma,asc=asc)
 
 
 def broadcast_parameters(params, root_rank):
