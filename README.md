@@ -1,11 +1,7 @@
 # Enabling Efficient All-Dimension Top-k Sparsification for High-Performance Distributed DNN Training Systems
-__ADTopk__  is an all-dimension top-𝑘 sparsification scheme that selects the 𝑘 largest elements across all dimensions of the per-layer gradient tensor, ensuring that every dimension contributes at least one element and eliminating dimension missing. 
-
-
-__ADTopk__ also enables independent local sorting within each dimension, allowing parallel execution across dimensions to enhance GPU utilization. Furthermore, we enhance __ADTopk__ with system-level optimizations: (i) interleaved sparsification to accelerate convergence, (ii) partial sparsification to reduce sparsification overhead, and (iii) hybrid collective communication to improve sparse communication efficiency. 
-
-
-We implement a high-performance distributed DNN training framework with a modular sparsification compression library supporting __ADTopk__ and state-of-the-art gradient sparsification baselines. We also develop collective communication libraries to support different sparsification communication primitives. We also prove the stable convergence of __ADTopk__ distributed SGD theoretically and experimentally.
+__ADTopk__  is an all-dimension top-𝑘 sparsification scheme that selects the 𝑘 largest elements across all dimensions of the per-layer gradient tensor, ensuring that every dimension contributes at least one element and eliminating dimension missing. __ADTopk__ also enables independent local sorting within each dimension, allowing parallel execution across dimensions to enhance GPU utilization. Furthermore, we enhance __ADTopk__ with system-level optimizations: (i) interleaved sparsification to accelerate convergence, (ii) partial sparsification to reduce sparsification overhead, and (iii) hybrid collective communication to improve sparse communication efficiency. 
+We implement a high-performance distributed DNN training framework with a modular sparsification compression library supporting __ADTopk__ and state-of-the-art gradient sparsification baselines. We also develop collective communication libraries to support different sparsification communication primitives.
+ <!-- We also prove the stable convergence of __ADTopk__ distributed SGD theoretically and experimentally. -->
 
 
 # Introduction
