@@ -30,18 +30,19 @@ This code repository covers:
 
 
 # Implementation
-
+## **__ADTopk__** System Architecture
 We use the PyTorch framework and implemented the prototype system of __ADTopk__ based on the [Horovod](https://github.com/horovod/horovod) framework using NCCL as the communication library. Overview of our system is as follows.
+
+We implement __ADTopk__, which mainly consists of five main modules, an all-dimension Top-𝑘 sparsification module, an interleaved sparsification module, a partial sparsification module, a hybrid collective communication module, and a decompression and averaging module. 
+We also implement an experimental proof module to prove the stable convergence of __ADTopk__ distributed SGD on multiple training tasks.
+
+## **__ADTopk__** System Overview
+The workflow of the __ADTopk__ System：
 
 <!-- ![Overview](Overview.jpg) -->
 <center class ='img'>
 <img src="overview_2.jpg" width="700px" />
 </center>
-
-
-We implement __ADTopk__, which mainly consists of five main modules, an all-dimension Top-𝑘 sparsification module, an interleaved sparsification module, a partial sparsification module, a hybrid collective communication module, and a decompression and averaging module. 
-We also implement an experimental proof module to prove the stable convergence of __ADTopk__ distributed SGD on multiple training tasks.
-
 # Installation
 ## **Prerequisites**
 - [CUDA-12.0](https://developer.nvidia.com/cuda-12-0-0-download-archive)
