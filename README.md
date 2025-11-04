@@ -12,15 +12,13 @@ We implement a high-performance distributed DNN training framework with a modula
 
 This code repository covers:
 
-### ADTopk
+### ADTopk Framework
 
 - __ADTopk__ avoids dimension missing via a matrix-based sparsification to enhance convergence accuracy, and increases GPU core parallelism via a multiple local sorting to improve sparsification efficiency.
-
 - __ADTopk__ employs an interleaved sparsification scheme to combine ADTopk and the traditional Top-𝑘 to speed up the convergence.
-
-- __ADTopk__ employs a partial sparsification scheme via minimizing communication idle periods to - 
-
+- __ADTopk__ employs a partial sparsification scheme via minimizing communication idle periods to to reduce the sparsification overhead.
 - __ADTopk__ employs a hybrid collective communication that combines All-Reduce and All-Gather to improve sparse communication efficiency.
+
 
 ### State-of-the-art gradient sparsification methods.
 
