@@ -101,7 +101,7 @@ bash run_imagenet_resnet152.sh
 # Papers
 - Enabling Efficient All-Dimension Top-k Sparsification for High-Performance Distributed DNN Training Systems
 
-An 11-page conference version of this paper appeared in the _Proceedings of the 33rd International Symposium on High-Performance Parallel and Distributed Computing (HPDC2024)_, June 2024.
+An earlier version of this paper appeared at the _Proceedings of the 33rd International Symposium on High-Performance Parallel and Distributed Computing (HPDC2024)_, June 2024.
 In this extended version, we enhanced ADTopk with new system-level optimizations, including partial sparsification and hybrid collective communication. We also include new evaluation results and show that our enhanced ADTopk increases training throughput by up to 268.0%.
 
 
