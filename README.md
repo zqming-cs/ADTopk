@@ -41,7 +41,7 @@ The workflow of the __ADTopk__ System：
 
 <!-- ![Overview](Overview.jpg) -->
 <center class ='img'>
-<img src="overview_2.jpg" width="700px" />
+<img src="overview_2.jpg" width="800px" />
 </center>
 # Installation
 ## **Prerequisites**
