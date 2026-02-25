@@ -116,8 +116,8 @@ If you are using this repository for your paper, please cite our previous work
 ```
 @inproceedings{ming2024adtopk,
   title={ADTopk: All-Dimension Top-k Compression for High-Performance Data-Parallel DNN Training},
-  author={Zhangqiang, Ming and Yuchong, Hu and Wenxiang, Zhou and Xinjue, Zheng and Chenxuan, Yao and Dan, Feng},
-  booktitle={Proceedings of the 33nd International Symposium on High-Performance Parallel and Distributed Computing},
+  author={Zhangqiang Ming and Yuchong Hu and Wenxiang Zhou and Xinjue Zheng and Dan Feng},
+  booktitle={Proceedings of the 33rd International Symposium on High-Performance Parallel and Distributed Computing},
   url={https://doi.org/10.1145/3625549.3658678}
   year={2024}
 }
@@ -132,6 +132,7 @@ If you are using this repository for your paper, please cite our previous work
 
 # License
 See [LICENSE](https://github.com/zqming-cs/ADTopk/blob/main/LICENSE).
+
 
 
 
