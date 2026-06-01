@@ -477,8 +477,6 @@ class TopKAoptCompressor(GaussianCompressor):
 
 
 
-
-
 compressors = {
         'topkA': TopKACompressor,
         'topkAopt': TopKAoptCompressor,

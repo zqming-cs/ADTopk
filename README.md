@@ -15,10 +15,10 @@ This code repository covers:
 - __ADTopk-P__: Partial sparsification
 - __ADTopk-H__: Hybrid collective communication -->
 
-- __ADTopk__ avoids dimension missing via a matrix-based sparsification to enhance convergence accuracy, and increases GPU core parallelism via a multiple local sorting to improve sparsification efficiency.
-- __ADTopk__ employs an interleaved sparsification scheme to combine ADTopk and the traditional Top-𝑘 to speed up the convergence.
-- __ADTopk__ employs a partial sparsification scheme via minimizing communication idle periods to to reduce the sparsification overhead.
-- __ADTopk__ employs a hybrid collective communication that combines All-Reduce and All-Gather to improve sparse communication efficiency.
+- __ADTopk(Naive)__: __ADTopk__ avoids dimension missing via a matrix-based sparsification to enhance convergence accuracy, and increases GPU core parallelism via a multiple local sorting to improve sparsification efficiency.
+- __ADTopk-I__: __ADTopk__ employs an interleaved sparsification scheme to combine ADTopk and the traditional Top-𝑘 to speed up the convergence.
+- __ADTopk-P__: __ADTopk__ employs a partial sparsification scheme via minimizing communication idle periods to to reduce the sparsification overhead.
+- __ADTopk-H__: __ADTopk__ employs a hybrid collective communication that combines All-Reduce and All-Gather to improve sparse communication efficiency.
 
 
 ### State-of-the-art gradient sparsification methods.
@@ -31,6 +31,14 @@ This code repository covers:
 - [SIDCo](https://proceedings.mlsys.org/paper_files/paper/2021/file/fea47a8aa372e42f3c84327aec9506cf-Paper.pdf)
 - [HiPress](https://gitlab.com/hipress/hipress)
 - [Espresso](https://github.com/zhuangwang93/Espresso)
+- [QSGD]()
+- [PowerSGD]()
+- [TernGrad]()
+- [TopKA2A]()
+- [SparDL]()
+- [CupCake]()
+
+
 
 
 
