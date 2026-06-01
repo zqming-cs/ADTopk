@@ -920,7 +920,7 @@ class AllReducer():
         full_mean = None
         full_var = None
 
-        if self._compression.name in ['topkA', 'topkA2']:
+        if self._compression.name in ['topkA', 'topkA2A']:
             result, global_indexes, included_indexes = topk_sparse_allreduce(
                 self._comm,
                 entry,
@@ -947,13 +947,13 @@ class AllReducer():
         tensor.fill_(0.0)
         if self._compression.name in ['gtopk']:
             tensor[final_indexes] = r
-        elif self._compression.name in ['topkA', 'topkA2']:
+        elif self._compression.name in ['topkA', 'topkA2A']:
             num_workers = self._comm.size
             nnz = topk_indexes.size(0)
             for i in range(num_workers):
                 index = final_indexes[i * nnz:(i + 1) * nnz]
                 tensor[index] += r[i * nnz:(i + 1) * nnz]
-            if self._compression.name == 'topkA2':
+            if self._compression.name == 'topkA2A':
                 values, indexes = torch.topk(torch.abs(tensor.data), k=nnz)
                 cv, c1, c2 = np.intersect1d(indexes.cpu().numpy(),
                                             topk_indexes.cpu().numpy(),

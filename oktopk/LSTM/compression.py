@@ -477,7 +477,7 @@ class TopKACompressor(TopKCompressor):
     name = 'topkA'
 
 class TopKACompressor2(TopKCompressor):
-    name = 'topkA2'
+    name = 'topkA2A'
 
 class TopKSACompressor(TopKCompressor):
     name = 'topkSA'
@@ -504,7 +504,7 @@ class TopKAoptCompressor(GaussianCompressor):
 compressors = {
         'topkA': TopKACompressor,
         'topkAopt': TopKAoptCompressor,
-        'topkA2': TopKACompressor2,
+        'topkA2A': TopKACompressor2,
         'topkSA': TopKSACompressor,
         'gtopk': gTopKCompressor,
         'gaussiank': GaussianKCompressor,

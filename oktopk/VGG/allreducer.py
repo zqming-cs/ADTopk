@@ -493,7 +493,7 @@ class AllReducer():
         full_mean = None
         full_var = None
 
-        if self._compression.name in ['topkA', 'topkA2']:
+        if self._compression.name in ['topkA', 'topkA2A']:
             result, global_indexes, included_indexes = topk_sparse_allreduce(self._comm, entry, self._sparse_storages[name], indexes=topk_indexes, dtype=np.float32)
         elif self._compression.name in ['gtopk']:
             result, global_indexes, included_indexes = gtopk_sparse_allreduce(self._comm, entry, storage=self._sparse_storages[name], indexes=topk_indexes, dtype=np.float32)
@@ -510,13 +510,13 @@ class AllReducer():
         tensor.fill_(0.0)
         if self._compression.name in ['gtopk']:
             tensor[final_indexes] = r
-        elif self._compression.name in ['topkA', 'topkA2']:
+        elif self._compression.name in ['topkA', 'topkA2A']:
             num_workers = self._comm.size
             nnz = topk_indexes.size(0)
             for i in range(num_workers):
                 index = final_indexes[i*nnz:(i+1)*nnz]
                 tensor[index] += r[i*nnz:(i+1)*nnz]
-            if self._compression.name == 'topkA2':
+            if self._compression.name == 'topkA2A':
                 values, indexes = torch.topk(torch.abs(tensor.data), k=nnz)
                 cv, c1, c2 = np.intersect1d(indexes.cpu().numpy(), topk_indexes.cpu().numpy(), assume_unique=False, return_indices=True)
                 included_indexes = c2
@@ -1356,7 +1356,7 @@ class AllReducer():
                             #result = new_tensor
                             #result.data = recv_tensor.data
 
-                elif self._sparse and self._compression.name in ['topkA', 'topkA2', 'gtopk']:
+                elif self._sparse and self._compression.name in ['topkA', 'topkA2A', 'gtopk']:
                     # For comparison purpose ===>
                     if settings.PROFILING_NORM:
                         residuals = self._compression.get_residuals(new_name, new_tensor)
