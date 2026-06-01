@@ -1,7 +1,7 @@
 import torch
+from torch import distributed as dist
 
 from ADTopklib import Compressor
-from horovod.torch import allreduce_
 
 
 @torch.jit.script
@@ -19,14 +19,13 @@ def orthogonalize(matrix):
 
 
 class PowerSGDCompressor(Compressor):
-    """
-    PowerSGD: Practical Low-Rank Gradient Compression for Distributed Optimization.
-    T. Vogels, S. P. Karimireddy, and M. Jaggi. In NeurIPS, 2019.
-    """
 
-    def __init__(self):
+    def __init__(self, rank=1, use_memory=False, world_size=1):
         super().__init__()
+        self.world_size = world_size
         self.q_memory = {}
+        self.rank = rank
+        self.use_memory = use_memory
 
     def compress(self, tensor, name):
         if tensor.dim() == 1:
@@ -34,18 +33,26 @@ class PowerSGDCompressor(Compressor):
 
         shape = tensor.size()
         matrix = tensor.view([shape[0], -1])
-        q = self.q_memory[name]
-        # q, _ = torch.qr(q)
-        orthogonalize(q)
+        n, m = matrix.size()
+        r = min(n, m, self.rank)
+        if self.use_memory and name in self.q_memory:
+            q = self.q_memory[name]
+        else:
+            q = torch.empty(m, r, dtype=matrix.dtype, layout=matrix.layout, device=matrix.device).normal_()
+            # q, _ = torch.qr(q)
+            orthogonalize(q)
 
         p = torch.mm(matrix, q)
-        p = allreduce_(p)
+        dist.all_reduce(p)
+        p = p / self.world_size
         # p, _ = torch.qr(p)
         orthogonalize(p)
         q = torch.mm(matrix.t(), p)
-        q = allreduce_(q)
+        dist.all_reduce(q)
+        q = q / self.world_size
         ctx = p, q, shape
-        self.q_memory[name] = q
+        if self.use_memory:
+            self.q_memory[name] = q
         return [], ctx
 
     def decompress(self, tensors, ctx):

@@ -26,6 +26,59 @@ def get_compressor(params):
         compress_ratio = params.get('compress_ratio', 0.01)
         compressor = DgcCompressor(compress_ratio)
     
+    
+    elif compress_name == 'efsignsgd':
+        from ADTopklib.compressor.efsignsgd import EFSignSGDCompressor
+        lr = params.get('lr', 0.1)
+        compressor = EFSignSGDCompressor(lr)
+    elif compress_name == 'fp16':
+        from ADTopklib.compressor.fp16 import FP16Compressor
+        compressor = FP16Compressor()
+    elif compress_name == 'natural':
+        from ADTopklib.compressor.natural import NaturalCompressor
+        compressor = NaturalCompressor()
+    elif compress_name == 'natural_cuda':
+        from ADTopklib.compressor.natural import NaturalCompressor_CUDA
+        compressor = NaturalCompressor_CUDA()
+    elif compress_name == 'none':
+        from ADTopklib.compressor.none import NoneCompressor
+        compressor = NoneCompressor()
+    
+    elif compress_name == 'onebit':
+        from ADTopklib.compressor.onebit import OneBitCompressor
+        compressor = OneBitCompressor()
+    
+    elif compress_name == 'powersgd':
+        from ADTopklib.compressor.powersgd import PowerSGDCompressor
+        compressor = PowerSGDCompressor()
+        
+    elif compress_name == 'qsgd':
+        from ADTopklib.compressor.qsgd import QSGDCompressor
+        quantum_num = params.get('quantum_num', 127)
+        bucket_size = params.get('bucket_size', 128)
+        compressor = QSGDCompressor(quantum_num, bucket_size)
+    
+    elif compress_name == 'qsgd_cuda':
+        from ADTopklib.compressor.qsgd import QSGDCompressor_CUDA
+        quantum_num = params.get('quantum_num', 127)
+        bucket_size = params.get('bucket_size', 128)
+        compressor = QSGDCompressor_CUDA(quantum_num, bucket_size)
+    elif compress_name == 'randomk':
+        from ADTopklib.compressor.randomk import RandomKCompressor
+        compress_ratio = params.get('compress_ratio', 0.3)
+        compressor = RandomKCompressor(compress_ratio)
+    elif compress_name == 'signsgd':
+        from ADTopklib.compressor.signsgd import SignSGDCompressor
+        compressor = SignSGDCompressor()
+    elif compress_name == 'signum':
+        from ADTopklib.compressor.signum import SignumCompressor
+        momentum = params.get('momentum', 0.9)
+        compressor = SignumCompressor(momentum)
+    elif compress_name == 'terngrad':
+        from ADTopklib.compressor.terngrad import TernGradCompressor
+        compressor = TernGradCompressor()
+    
+    
     elif compress_name == 'topk':
         from ADTopklib.compressor.topk import TopKCompressor
         compress_ratio = params.get('compress_ratio', 0.01)
