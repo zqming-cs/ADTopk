@@ -128,6 +128,7 @@ If you are using this repository for your paper, please cite our previous work
 	journal={ACM Transactions on Architecture and Code Optimization (TACO)},
 	volume={166},
 	pages={50--75},
+	url={https://doi.org/10.1145/3832779},
 	year={2026},
 	publisher={ACM}
 }
