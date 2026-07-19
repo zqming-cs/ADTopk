@@ -122,6 +122,16 @@ In this extended version, we enhanced __ADTopk__ with new system-level optimizat
 # Citation
 If you are using this repository for your paper, please cite our previous work
 ```
+@article{ming2026enabling,
+	title={Enabling Efficient All-Dimension Top-k Sparsification for High-Performance Distributed DNN Training Systems},
+	author={Zhangqiang Ming and Yuchong Hu and Patrick P. C. Lee and Yuanhao Shu and Wenxiang Zhou and Xinjue Zheng and Dan Feng},
+	journal={ACM Transactions on Architecture and Code Optimization (TACO)},
+	volume={166},
+	pages={50--75},
+	year={2026},
+	publisher={ACM}
+}
+
 @inproceedings{ming2024adtopk,
   title={ADTopk: All-Dimension Top-k Compression for High-Performance Data-Parallel DNN Training},
   author={Zhangqiang Ming and Yuchong Hu and Wenxiang Zhou and Xinjue Zheng and Dan Feng},
